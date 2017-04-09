@@ -50,7 +50,7 @@ def extractJSON(file, fileName):
 
 # Upload a zip file using scp.
 def uploadZip(dest, zipFile):
-    scpInstruction = "scp " + zipFile + " " + dest #TODO: this should be made to work
+    scpInstruction = "scp " + zipFile + " " + dest
     os.system(scpInstruction)
 
 #Push values to ResultsDB
@@ -60,7 +60,6 @@ def pushResults(outcome, name, fileName):
             'outcome':outcome,
             'testcase': {
                 "name": name,
-                #TODO: not use ref_url, but use new object with new key/value pair
                 "ref_url": destinationServer + fileName
                 }
             }
