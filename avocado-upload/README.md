@@ -14,6 +14,6 @@ The configuration file needs to be saved in the ```/lib/systemd/system/``` direc
 user 'testuser' needs to exist, which has the script saved in its home directory. Otherwise, 
 the configuration file needs to be altered.
 
-The watched directories and other directories for saving files, or remote locations may need 
-to be altered in the script to fit your needs. Note that the link to the complete zipped results 
-is stored in ResultsDB's ref_url.
+We have created this script with the Avocado testing framework in mind.The watched directories 
+and other directories for saving files, or remote locations may need to be altered in the script 
+to fit your needs. Note that the link to the complete zipped results is stored in ResultsDB's ref_url.
