@@ -1,6 +1,7 @@
-==Kickstart files for spinning Fedora Live OS==
+==Kickstart files for spinning Fedora Live OS using Livemedia-Creator==
 
 This scripts need to be placed in the /usr/share/spin-kickstarts folder.
+To make this work the packages: 
 
 * ```fedora-testing-ws.ks``` - Is the stripped down workstation of Fedora. This file includes de livebase.ws which
 is a Fedora Live Base kickstart file with modifications.
