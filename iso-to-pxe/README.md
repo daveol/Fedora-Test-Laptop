@@ -6,7 +6,7 @@ This script will be used to unpack the file system from an ISO (generated from k
 and move the files of interest to appropriate location. These files are requisit for booting PXE.
 The files and the dirs they will be moved to are listed below.
 
-Usage of command:
+Usage of command arguments:
 
       -i ISO_FILE --  The ISO file location to be unpacked
       -t TFTP_DIR --  This is the dir in which the TFTP files are stored, pxelinux.0 file should be 
