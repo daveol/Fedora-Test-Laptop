@@ -14,7 +14,6 @@ Before spinning a LiveOS you need to make sure that SELinux is disabled by runni
 To spin the LiveOS run:
 ```sudo livemedia-creator --make-iso --no-virt --ks=./fedora-testing-ws.ks --macboot```.
 
-This will give you a complete Bootable ISO which you can either burn to a USB stick and boot from, or use the script
-to extract the iso and place the SquashFS, Kernel and Initramfs on the server.
+After this command you will end up with an ISO which contains the LiveOS. The iso-to-pxe script can be used to put the iso on the pxe server (see https://github.com/daveol/Fedora-Test-Laptop/tree/master/iso-to-pxe).
 
 For more information about the livemedia-creator: http://lorax.readthedocs.io/en/latest/livemedia-creator.html
