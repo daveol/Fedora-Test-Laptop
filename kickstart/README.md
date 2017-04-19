@@ -8,7 +8,7 @@ we just need to include the livebase.
 * ```fedora-testing-ws.ks``` - This is the stripped down version of Fedora Workstation. We removed the installer screen and libreoffice packages. This file includes de livebase.ws which
 is a Fedora Live Base kickstart file with modifications.
 
-Before spinning a Live OS you need to make sure that SELinux is disabled: ```setenforce 0```
+Before spinning a LiveOS you need to make sure that SELinux is disabled by running: ```setenforce 0```
 
 
 To spin the Live OS run:
