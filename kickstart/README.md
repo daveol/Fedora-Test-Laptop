@@ -11,7 +11,7 @@ is a Fedora Live Base kickstart file with modifications.
 Before spinning a LiveOS you need to make sure that SELinux is disabled by running: ```setenforce 0```
 
 
-To spin the Live OS run:
+To spin the LiveOS run:
 ```sudo livemedia-creator --make-iso --no-virt --ks=./fedora-testing-ws.ks --macboot```.
 
 This will give you a complete Bootable ISO which you can either burn to a USB stick and boot from, or use the script
