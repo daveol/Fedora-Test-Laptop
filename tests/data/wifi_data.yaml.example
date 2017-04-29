@@ -1,0 +1,10 @@
+wireless_interface: wlan0
+expected:
+ - first_ap
+ - second_ap
+switch_from:
+ ssid: first_ap
+ pass: some_password
+switch_to:
+ ssid: second_ap
+ pass: some_password
