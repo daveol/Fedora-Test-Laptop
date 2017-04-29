@@ -2,9 +2,9 @@ wireless_interface: wlan0
 expected:
  - first_ap
  - second_ap
-switch_from:
- ssid: first_ap
- pass: some_password
-switch_to:
- ssid: second_ap
- pass: some_password
+access_point_1:
+ ssid: ap1_ssid
+ pass: ap1_pw
+access_point_2:
+ ssid: ap2_ssid
+ pass: ap2_pw 
