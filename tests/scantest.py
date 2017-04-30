@@ -3,21 +3,21 @@ import subprocess as subp
 import yaml
 from avocado import Test
 
-class WifiTest_ScanAP(Test):
+class WifiScanAP(Test):
     def test(self):
         with open("data/wifi_data.yaml", 'r') as stream:
             try:
                 wifidata = yaml.load(stream)
             except yaml.YAMLError as exc:
                 self.log.debug(exc)
-        ap1 = wifidata['access_point_1']['ap1_ssid']
-        ap2 = wifidata['access_point_2']['ap2_ssid']
+        ap1 = wifidata['access_point_1']['ssid']
+        ap2 = wifidata['access_point_2']['ssid']
         self.interface = wifidata['wireless_interface']
 
         self.scanAP(ap1, ap2);
 
     def scanAP(self, ap1, ap2):
-        p = subp.Popen(['nmcli', 'device', 'wifi', 'device'], stdout=subp.PIPE, stderr=subp.PIPE)
+        p = subp.Popen(['nmcli', 'device', 'wifi', 'list'], stdout=subp.PIPE, stderr=subp.PIPE)
         
         stdout, stderr = p.communicate()
         scan1 = stdout.rstrip()

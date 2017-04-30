@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 import subprocess as subp
 import yaml
-from avocado import Test
 
-class WifiAPSwitch(Test):
+from avocado import Test
+from test import WifiTest
+
+class WifiAPSwitch(WifiTest):
+    """
+    :avocado: enable
+    """
     def test(self):
         with open("data/wifi_data.yaml", 'r') as stream:
             try:
@@ -57,9 +62,9 @@ class WifiAPSwitch(Test):
             cParts = con.split(":") # nmcli -t output is seperated by :
             # see if the ssid exist, and has the correct type
             if ssid in cParts and cParts[3] == "802-11-wireless":
+               existing = True
                if cParts[2] != "yes": # yes means active => don't reconnect
                   subp.call(['nmcli', 'con', 'up', 'uuid', cParts[1]]) # cParts[1] contains uuid
-               existing = True
 
         # when the network does not yet exist, create a new one
         if existing == False:
