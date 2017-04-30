@@ -10,8 +10,8 @@ class WifiTest_ConnectAP(Test):
                 wifidata = yaml.load(stream)
             except yaml.YAMLError as exc:
                 self.log.debug(exc)
-        accessPoint = wifidata['access_point_1']['ap1_ssid']
-        accessPointPass = wifidata['access_point_1']['ap1_pass']
+        accessPoint = wifidata['access_point_1']['ssid']
+        accessPointPass = wifidata['access_point_1']['pass']
         self.interface = wifidata['wireless_interface']
 
         self.checkCon(accessPoint, accessPointPass)
