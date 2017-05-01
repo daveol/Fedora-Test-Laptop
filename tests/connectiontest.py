@@ -3,7 +3,7 @@ import subprocess as subp
 import yaml
 from avocado import Test
 
-class WifiTest_ConnectAP(Test):
+class WifiConnectAP(Test):
     def test(self):
         with open("data/wifi_data.yaml", 'r') as stream:
             try:
@@ -32,9 +32,10 @@ class WifiTest_ConnectAP(Test):
         check = subp.call(['nmcli', 'dev', 'wifi', 'con', ssid, 'password', password])
         
         active = self.tryCon(ssid)
-        p = subp.call(['ping', '-I', self.interface, '8.8.8.8', '-c', '1'])
-        
-        if p == 0:
+        #p = subp.call(['ping', '-I', self.interface, '8.8.8.8', '-c', '1'])
+        pingResults = WifiUtils.pingtest('8.8.8.8', self.interface)
+
+        if pingResult == 0:
             self.log.debug("internet is working on network {0}".format(active))
         else:
             self.fail("Internet is not available on network {0}".format(active))
