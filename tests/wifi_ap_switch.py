@@ -1,20 +1,12 @@
 #!/usr/bin/env python
 import subprocess as subp
-import yaml
 
 from avocado import Test
-from test import WifiTest
+from wifi_utils import WifiUtils
 
-class WifiAPSwitch(WifiTest):
-    """
-    :avocado: enable
-    """
+class WifiSwitchAP(Test):
     def test(self):
-        with open("data/wifi_data.yaml", 'r') as stream:
-            try:
-                wifidata = yaml.load(stream)
-            except yaml.YAMLError as exc:
-                self.log.debug(exc)
+        wifidata = WifiUtils.load_yaml(self, "data/wifi_data.yaml")
         switchFrom = wifidata['access_point_1']['ssid']
         switchTo = wifidata['access_point_2']['ssid']
         switchFromPass = wifidata['access_point_1']['pass']
@@ -23,16 +15,14 @@ class WifiAPSwitch(WifiTest):
 
         self.switchCon(switchFrom, switchFromPass)
         self.switchCon(switchTo, switchToPass)
-
-
     def tryCon(self, expected):
         # get the SSID connected on the interface
-        p = subp.Popen(['iwgetid', self.interface, '-r'], stdout=subp.PIPE, stderr=subp.PIPE)
+        #p = subp.Popen(['iwgetid', self.interface, '-r'], stdout=subp.PIPE, stderr=subp.PIPE)
 
-        stdout, stderr = p.communicate()
+        #stdout, stderr = p.communicate()
 
         # trim extraneous whitespace
-        activeCon = stdout.rstrip()
+        activeCon = WifiUtils.connected_to(self.interface) #stdout.rstrip()
 
         if activeCon != expected:
             self.fail("initial network connection state was not as expected was: {0} expected {1}".format(activeCon, expected))
@@ -41,9 +31,10 @@ class WifiAPSwitch(WifiTest):
 
     def switchCon(self, ssid, password):
         # get all known networks
-        p = subp.Popen(['nmcli', '-t', '--fields', 'NAME,UUID,ACTIVE,TYPE', 'c'], stdout=subp.PIPE, stderr=subp.PIPE)
+        #p = subp.Popen(['nmcli', '-t', '--fields', 'NAME,UUID,ACTIVE,TYPE', 'c'], stdout=subp.PIPE, stderr=subp.PIPE)
+        knownNetworks = WifiUtils.get_known()
 
-        stdout, stderr = p.communicate()
+        stdout, stderr = knownNetworks.communicate()
 
         # something went wrong while getting the networks
         if stderr != "":
@@ -84,11 +75,12 @@ class WifiAPSwitch(WifiTest):
            self.fail("Getting gateway failed {0}".format(stderr))
 
         # ping default gateway using the desired interface once then check for success
-        p = subp.call(['ping', '-I', self.interface, gateway, '-c', '1'])
+        #pingResult = subp.call(['ping', '-I', self.interface, gateway, '-c', '1'])
+        pingResult = WifiUtils.pingtest(gateway, self.interface)
 
-        if p == 0:
-            self.log.debug("Internet is working on network {0} pinged {1}".format(active, gateway))
+        if pingResult == 0:
+            self.log.debug("Internet is working on network {0}, pinged {1}".format(active, gateway))
         else:
-            self.fail("Internet is not available on network {0} tried to ping {1}".format(active, gateway))
+            self.fail("Internet is not available on network {0}, tried to ping {1}".format(active, gateway))
 
 

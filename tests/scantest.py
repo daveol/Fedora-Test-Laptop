@@ -18,7 +18,7 @@ class WifiScanAP(Test):
 
     def scanAP(self, ap1, ap2):
         p = subp.Popen(['nmcli', 'device', 'wifi', 'list'], stdout=subp.PIPE, stderr=subp.PIPE)
-        
+
         stdout, stderr = p.communicate()
         scan1 = stdout.rstrip()
 
