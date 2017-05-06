@@ -33,12 +33,13 @@ class InternetUtils():
         stdout, stderr = connectedP.communicate()
         # return stdout with trimmed whitespace = connected ssid
         return stdout.rstrip()
-	""" 
-		connects to a ssid, based on whether it exists.
-	    if it doesn't, makes a new connection, otherwise
-		uses the existing
     """ 
-	def connect(ssid, password):
+    connects to a ssid, based on whether it exists.
+    if it doesn't, makes a new connection, otherwise
+    uses the existing
+    """ 
+    @staticmethod
+    def connect(ssid, password):
 		knownNetworks = InternetUtils.get_known()
 
         stdout, stderr = knownNetworks.communicate()
