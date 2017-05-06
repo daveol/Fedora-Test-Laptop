@@ -1,2 +1,2 @@
-tests/data/wifi_data.yaml
+tests/data/internet_data.yaml
 *.pyc
