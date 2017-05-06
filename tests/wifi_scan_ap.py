@@ -2,14 +2,13 @@
 import subprocess as subp
 import yaml
 from avocado import Test
+from internet_utils import InternetUtils
 
 class WifiScanAP(Test):
     def test(self):
-        with open("data/wifi_data.yaml", 'r') as stream:
-            try:
-                wifidata = yaml.load(stream)
-            except yaml.YAMLError as exc:
-                self.log.debug(exc)
+        # has temp self arg ** This line should be changed when
+        #                      implemented in Benjamins env **
+        wifidata = InternetUtils.load_yaml(self, "data/wifi_data.yaml")
         ap1 = wifidata['access_point_1']['ssid']
         ap2 = wifidata['access_point_2']['ssid']
         self.interface = wifidata['wireless_interface']
