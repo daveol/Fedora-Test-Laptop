@@ -1,7 +1,7 @@
 import subprocess as subp
 import yaml
 
-class WifiUtils():
+class InternetUtils():
     """ 
     Should be integrated in fed_laptoptest/ ?
 
