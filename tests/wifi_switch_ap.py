@@ -15,13 +15,9 @@ class WifiSwitchAP(Test):
 
         self.switchCon(switchFrom, switchFromPass)
         self.switchCon(switchTo, switchToPass)
+
     def tryCon(self, expected):
         # get the SSID connected on the interface
-        #p = subp.Popen(['iwgetid', self.interface, '-r'], stdout=subp.PIPE, stderr=subp.PIPE)
-
-        #stdout, stderr = p.communicate()
-
-        # trim extraneous whitespace
         activeCon = InternetUtils.connected_to(self.interface) #stdout.rstrip()
 
         if activeCon != expected:
@@ -46,7 +42,6 @@ class WifiSwitchAP(Test):
            self.fail("Getting gateway failed {0}".format(stderr))
 
         # ping default gateway using the desired interface once then check for success
-        #pingResult = subp.call(['ping', '-I', self.interface, gateway, '-c', '1'])
         pingResult = InternetUtils.pingtest(gateway, self.interface)
 
         if pingResult == 0:
