@@ -6,11 +6,8 @@ from avocado import Test
 
 class WifiConnectAP(Test):
     def test(self):
-        with open("data/wifi_data.yaml", 'r') as stream:
-            try:
-                wifidata = yaml.load(stream)
-            except yaml.YAMLError as exc:
-                self.log.debug(exc)
+        InternetUtils.load_yaml("data/wifi_data.yaml")
+
         accessPoint = wifidata['access_point_1']['ssid']
         accessPointPass = wifidata['access_point_1']['pass']
         self.interface = wifidata['wireless_interface']
@@ -27,13 +24,14 @@ class WifiConnectAP(Test):
         if activeCon != expected:
             self.fail("initial network connection state was not as expected was: {0} expected {1}".format(activeCon, expected))
         self.log.debug("Current network checked. Now on {0}".format(activeCon))
+
         return activeCon
 
     def checkCon(self, ssid, password):
         InternetUtils.connect(ssid, password)
 
         active = self.tryCon(ssid)
-        #p = subp.call(['ping', '-I', self.interface, '8.8.8.8', '-c', '1'])
+
         pingResult = InternetUtils.pingtest('8.8.8.8', self.interface)
 
         if pingResult == 0:
