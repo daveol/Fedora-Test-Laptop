@@ -2,11 +2,11 @@
 import subprocess as subp
 
 from avocado import Test
-from wifi_utils import WifiUtils
+from internet_utils import InternetUtils
 
 class WifiSwitchAP(Test):
     def test(self):
-        wifidata = WifiUtils.load_yaml(self, "data/wifi_data.yaml")
+        wifidata = InternetUtils.load_yaml(self, "data/wifi_data.yaml")
         switchFrom = wifidata['access_point_1']['ssid']
         switchTo = wifidata['access_point_2']['ssid']
         switchFromPass = wifidata['access_point_1']['pass']
@@ -22,7 +22,7 @@ class WifiSwitchAP(Test):
         #stdout, stderr = p.communicate()
 
         # trim extraneous whitespace
-        activeCon = WifiUtils.connected_to(self.interface) #stdout.rstrip()
+        activeCon = InternetUtils.connected_to(self.interface) #stdout.rstrip()
 
         if activeCon != expected:
             self.fail("initial network connection state was not as expected was: {0} expected {1}".format(activeCon, expected))
@@ -32,7 +32,7 @@ class WifiSwitchAP(Test):
     def switchCon(self, ssid, password):
         # get all known networks
         #p = subp.Popen(['nmcli', '-t', '--fields', 'NAME,UUID,ACTIVE,TYPE', 'c'], stdout=subp.PIPE, stderr=subp.PIPE)
-        knownNetworks = WifiUtils.get_known()
+        knownNetworks = InternetUtils.get_known()
 
         stdout, stderr = knownNetworks.communicate()
 
@@ -76,7 +76,7 @@ class WifiSwitchAP(Test):
 
         # ping default gateway using the desired interface once then check for success
         #pingResult = subp.call(['ping', '-I', self.interface, gateway, '-c', '1'])
-        pingResult = WifiUtils.pingtest(gateway, self.interface)
+        pingResult = InternetUtils.pingtest(gateway, self.interface)
 
         if pingResult == 0:
             self.log.debug("Internet is working on network {0}, pinged {1}".format(active, gateway))

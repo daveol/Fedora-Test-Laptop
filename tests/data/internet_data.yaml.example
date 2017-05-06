@@ -1,4 +1,5 @@
-wireless_interface: wlan0
+wireless_interface: wlp2s0
+wireless_interface: eth0
 expected:
  - first_ap
  - second_ap
@@ -8,3 +9,6 @@ access_point_1:
 access_point_2:
  ssid: ap2_ssid
  pass: ap2_pw 
+access_point_5ghz:
+ ssid: ap3_ssid
+ pass: ap3_pw 

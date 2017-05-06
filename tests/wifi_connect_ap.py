@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import subprocess as subp
 import yaml
-from wifi_utils import WifiUtils
+from internet_utils import InternetUtils
 from avocado import Test
 
 class WifiConnectAP(Test):
@@ -30,7 +30,7 @@ class WifiConnectAP(Test):
         return activeCon
 
     def checkCon(self, ssid, password):
-        knownNetworks = WifiUtils.get_known()
+        knownNetworks = InternetUtils.get_known()
 
         stdout, stderr = knownNetworks.communicate()
 
@@ -60,7 +60,7 @@ class WifiConnectAP(Test):
             switch = subp.call(['nmcli', 'dev', 'wifi', 'con', ssid, 'password', password])        
         active = self.tryCon(ssid)
         #p = subp.call(['ping', '-I', self.interface, '8.8.8.8', '-c', '1'])
-        pingResult = WifiUtils.pingtest('8.8.8.8', self.interface)
+        pingResult = InternetUtils.pingtest('8.8.8.8', self.interface)
 
         if pingResult == 0:
             self.log.debug("internet is working on network {0}".format(active))
