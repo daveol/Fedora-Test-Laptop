@@ -6,7 +6,7 @@ from avocado import Test
 
 #I have used my Samsung Galaxy S7 Edge as target device
 
-class WifiScanAP(Test):
+class BluetoothDeviceTest(Test):
   def test():
 
       targetDeviceMac = '8C:1A:BF:0D:31:A9'
