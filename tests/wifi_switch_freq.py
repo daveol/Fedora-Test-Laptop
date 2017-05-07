@@ -6,7 +6,7 @@ from internet_utils import InternetUtils
 
 class WifiSwitchFreq(Test):
     def test(self):
-        wifidata = InternetUtils.load_yaml(self, "data/wifi_data.yaml")
+        wifidata = InternetUtils.load_yaml(self, "data/internet_data.yaml")
         switchFrom = wifidata['access_point_1']['ssid']
         switchTo = wifidata['access_point_5ghz']['ssid']
         switchFromPass = wifidata['access_point_1']['pass']

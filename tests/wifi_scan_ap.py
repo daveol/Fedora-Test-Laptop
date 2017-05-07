@@ -8,7 +8,7 @@ class WifiScanAP(Test):
     def test(self):
         # has temp self arg ** This line should be changed when
         #                      implemented in Benjamins env **
-        wifidata = InternetUtils.load_yaml(self, "data/wifi_data.yaml")
+        wifidata = InternetUtils.load_yaml(self, "data/internet_data.yaml")
         ap1 = wifidata['access_point_1']['ssid']
         ap2 = wifidata['access_point_2']['ssid']
         self.interface = wifidata['wireless_interface']
