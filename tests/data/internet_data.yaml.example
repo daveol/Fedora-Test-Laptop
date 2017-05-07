@@ -1,5 +1,5 @@
 wireless_interface: wlp2s0
-wireless_interface: eth0
+wired_interface: ens33
 expected:
  - first_ap
  - second_ap
