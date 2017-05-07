@@ -6,7 +6,7 @@ from avocado import Test
 
 class WifiConnectAP(Test):
     def test(self):
-        InternetUtils.load_yaml("data/wifi_data.yaml")
+        wifidata = InternetUtils.load_yaml(self, "data/internet_data.yaml")
 
         accessPoint = wifidata['access_point_1']['ssid']
         accessPointPass = wifidata['access_point_1']['pass']

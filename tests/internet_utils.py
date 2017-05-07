@@ -40,7 +40,7 @@ class InternetUtils():
     """ 
     @staticmethod
     def connect(ssid, password):
-		knownNetworks = InternetUtils.get_known()
+        knownNetworks = InternetUtils.get_known()
 
         stdout, stderr = knownNetworks.communicate()
 
