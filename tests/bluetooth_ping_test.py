@@ -4,6 +4,8 @@ import subprocess as subp
 from subprocess import *
 from avocado import Test
 
+#I have used my Samsung Galaxy S7 Edge as target device
+
 class WifiScanAP(Test):
   def test():
 
