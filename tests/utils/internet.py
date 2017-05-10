@@ -1,5 +1,4 @@
 import subprocess as subp
-import yaml
 
 
 
@@ -13,12 +12,14 @@ def pingtest(ip, interface):
     """
     response = subp.call(['ping', '-I', interface, ip, '-c', '1'])
 
-    if (re
-    return subp.call(['ping', '-I', interface, ip, '-c', '1'])
+    if response == 0:
+        return True
+    return False
 
 def pingtest_hard(ip, interface, test_class):
     """pingtest checks whether the IP is reachable on the given
-    interface using a single ICMP ping.
+    interface using a single ICMP ping. Same as pingtest, but throws
+    exception on fail.
 
     :param ip: The IP address to ping
     :param interface: The interface to use as the origin for the ping
@@ -28,14 +29,6 @@ def pingtest_hard(ip, interface, test_class):
     fail = subp.call(['ping', '-I', interface, ip, '-c', '1'])
     if fail != 0:
        test_class.fail("Ping on interface {0} to ip {1} failed".format(interface, ip));
-
-# should be moved to a more generic class
-def load_yaml(test_class, path):
-    with open(path, 'r') as stream:
-        try:
-            return yaml.load(stream)
-        except yaml.YAMLError as exc:
-            test_class.log.debug(exc)
 
 # returns a list of known (existing) networks in the system
 def get_known():
@@ -55,7 +48,7 @@ uses the existing
 """ 
 
 def connect(ssid, password):
-    knownNetworks = InternetUtils.get_known()
+    knownNetworks = get_known()
 
     stdout, stderr = knownNetworks.communicate()
 

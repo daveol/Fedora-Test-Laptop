@@ -10,15 +10,12 @@ class EthernetConnect(Test):
 
         self.interface = internetdata['wired_interface']
 
-        self.checkCon()
+        self.connect_and_check()
 
-    def checkCon(self):
+    def connect_and_check(self):
 
         pingResult = InternetUtils.pingtest('8.8.8.8', self.interface)
 
-        if pingResult == 0:
-            self.log.debug("internet is working on ethernet interface {0}".format(self.interface))
-        else:
+        if pingResult != 0:
             self.fail("Internet is not available on ethernet interface {0}".format(self.interface))
-
-
+        self.log.debug("internet is working on ethernet interface {0}".format(self.interface))
