@@ -1,28 +1,23 @@
 #!/usr/bin/env python
 import os
 import subprocess as subp
-from subprocess import *
 from avocado import Test
+import bluetooth
 
-#I have used my Samsung Galaxy S7 Edge as target device
+'''
+This test will ping a specific device. The device needs to be specified in the
+YAML file. If the device responds, the result will be found in the debug log.
+If the test fails, a fail exception will be raised.
+'''
+class BluetoothPingTest(Test):
+    def test():
+      targetDeviceMac = '8C:1A:BF:0D:31:A2' #FIXME this needs to be read from YAML
 
-class BluetoothDeviceTest(Test):
-  def test():
+      p = subp.Popen(['sudo', 'l2ping', targetDeviceMac ,'-c', '5'], stderr=STDOUT, stdout = PIPE)
+      result = p.communicate()[0]
+      returnCode = p.returncode
 
-      targetDeviceMac = '8C:1A:BF:0D:31:A9'
-      bluetoothChannel = '2'
-      port = 1
+      if returnCode != 0 :
+          self.fail("BluetoothPingTest Failed.")
 
-
-      print("Bluetooth ping test: testing " + targetDeviceMac)
-      p = subp.Popen(['sudo', 'l2ping', '8C:1A:BF:0D:31:A9','-c', '5'], stdout=subp.PIPE, stderr=subp.PIPE)
-
-      stdout, stderr = p.communicate()
-      res = stdout.rstrip()
-
-      if "5 sent, 5 received" in res:
-         self.log.debug("Bluetooth ping test succeeded: + res")
-      else:
-          self.fail("Bluetooth ping test: pinging " + targetDeviceMac + " failed")
-
-
+      self.log.debug("Bluetooth ping test succeeded: " + result)
