@@ -13,9 +13,9 @@ class WifiScanAP(Test):
         ap2 = wifidata['access_point_2']['ssid']
         self.interface = wifidata['wireless_interface']
 
-        self.scanAP(ap1, ap2);
+        self.scan_ap(ap1, ap2);
 
-    def scanAP(self, ap1, ap2):
+    def scan_ap(self, ap1, ap2):
         p = subp.Popen(['nmcli', 'device', 'wifi', 'list'], stdout=subp.PIPE, stderr=subp.PIPE)
 
         stdout, stderr = p.communicate()
@@ -25,6 +25,5 @@ class WifiScanAP(Test):
             self.fail("First AP not found {0}".format(ap1))
         if ap2 not in scan1:
             self.fail("Second AP not found {0}".format(ap2))
-        else:
-            self.log.debug("Both APs can be found")
+        self.log.debug("Both APs can be found")
 

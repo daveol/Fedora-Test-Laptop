@@ -5,7 +5,7 @@ from avocado import Test
 from internet_utils import InternetUtils
 
 class WifiSwitchAP(Test):
-    def test(self):
+    def test_switch_ap(self):
         wifidata = InternetUtils.load_yaml(self, "data/internet_data.yaml")
         switchFrom = wifidata['access_point_1']['ssid']
         switchTo = wifidata['access_point_2']['ssid']
@@ -15,21 +15,20 @@ class WifiSwitchAP(Test):
 
         self.switchCon(switchFrom, switchFromPass)
         self.switchCon(switchTo, switchToPass)
+        
+    def test_switch_feq(self):
+        wifidata = InternetUtils.load_yaml(self, "data/internet_data.yaml")
+        switchFrom = wifidata['access_point_1']['ssid']
+        switchTo = wifidata['access_point_5ghz']['ssid']
+        switchFromPass = wifidata['access_point_1']['pass']
+        switchToPass = wifidata['access_point_5ghz']['pass']
+        self.interface = wifidata['wireless_interface']
 
-    def tryCon(self, expected):
-        # get the SSID connected on the interface
-        activeCon = InternetUtils.connected_to(self.interface) #stdout.rstrip()
+        self.switchCon(switchFrom, switchFromPass)
+        self.switchCon(switchTo, switchToPass)
 
-        if activeCon != expected:
-            self.fail("initial network connection state was not as expected was: {0} expected {1}".format(activeCon, expected))
-        self.log.debug("Current network checked. Now on {0}".format(activeCon))
-        return activeCon
-
-    def switchCon(self, ssid, password):		
+    def switch_con(self, ssid, password):		
         InternetUtils.connect(ssid, password)
-
-        # see if the actual connection is still the same as expected
-        active = self.tryCon(ssid)
 
         # get the default gateway by parsing ip route's output
         gatewayP1 = subp.Popen(['ip', 'route'], stdout=subp.PIPE, stderr=subp.PIPE)
@@ -44,9 +43,9 @@ class WifiSwitchAP(Test):
         # ping default gateway using the desired interface once then check for success
         pingResult = InternetUtils.pingtest(gateway, self.interface)
 
-        if pingResult == 0:
-            self.log.debug("Internet is working on network {0}, pinged {1}".format(active, gateway))
-        else:
-            self.fail("Internet is not available on network {0}, tried to ping {1}".format(active, gateway))
+        if pingResult != 0:
+            self.fail("Internet is not available on network {0}, tried to ping {1}".format(ssid, gateway))
+        self.log.debug("Internet is working on network {0}, pinged {1}".format(ssid, gateway))
+            
 
 
