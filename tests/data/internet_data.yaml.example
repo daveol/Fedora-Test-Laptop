@@ -1,0 +1,14 @@
+-wireless_interface: wlp2s0
+-wired_interface: ens33
+-expected:
+- - first_ap
+- - second_ap
+-access_point_1:
+- ssid: ap1_ssid
+- pass: ap1_pw
+-access_point_2:
+- ssid: ap2_ssid
+- pass: ap2_pw 
+-access_point_5ghz:
+- ssid: ap3_ssid
+- pass: ap3_pw 
