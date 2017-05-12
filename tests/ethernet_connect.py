@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import subprocess as subp
 import yaml
+
+from avocado import Test
 from utils import internet
 from utils import utils
 
@@ -12,6 +14,6 @@ class EthernetConnect(Test):
 
         gateway = internet.get_gateway(self.interface, self)
 
-        pingResult = internet.pingtest_hard(gateway, self.interface)
+        pingResult = internet.pingtest_hard(gateway, self.interface, self)
 
         self.log.debug("Internet is working on ethernet interface {0}".format(self.interface))

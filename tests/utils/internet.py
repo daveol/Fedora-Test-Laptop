@@ -89,7 +89,7 @@ def get_gateway(interface, test_class):
     gatewayP1 = subp.Popen(['ip', 'route', 'show', 'dev', interface], stdout=subp.PIPE, stderr=subp.PIPE).communicate()[0]
     gatewayMatches = re.search(r'^default\s+via\s+(?P<gw>[^\s]*)\s', gatewayP1, re.MULTILINE)
     
-    if gatewayMatches == None
+    if gatewayMatches == None:
         test_class.fail("Getting gateway failed")
     gateway = gatewayMatches.group(1)
     
