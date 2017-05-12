@@ -1,14 +1,15 @@
 import subprocess as subp
-
-
+import re
 
 def pingtest(ip, interface):
-    """pingtest checks whether the IP is reachable on the given
+    """
+    pingtest checks whether the IP is reachable on the given
     interface using a single ICMP ping.
 
     :param ip: The IP address to ping
     :param interface: The interface to use as the origin for the ping
     :return: True on success
+    
     """
     response = subp.call(['ping', '-I', interface, ip, '-c', '1'])
 
@@ -17,7 +18,8 @@ def pingtest(ip, interface):
     return False
 
 def pingtest_hard(ip, interface, test_class):
-    """pingtest checks whether the IP is reachable on the given
+    """
+    pingtest_hard checks whether the IP is reachable on the given
     interface using a single ICMP ping. Same as pingtest, but throws
     exception on fail.
 
@@ -26,28 +28,29 @@ def pingtest_hard(ip, interface, test_class):
     :param test_class: The origin Test class from which the function
                        was called
     """
-    fail = subp.call(['ping', '-I', interface, ip, '-c', '1'])
-    if fail != 0:
+    success = pingtest(ip, interface)
+    if success == False:
        test_class.fail("Ping on interface {0} to ip {1} failed".format(interface, ip));
 
-# returns a list of known (existing) networks in the system
 def get_known():
+    """
+    Returns a list of known (existing) networks in the system
+    
+    :return: The list of known networks
+    
+    """
     return subp.Popen(['nmcli', '-t', '--fields', 'NAME,UUID,ACTIVE,TYPE', 'c'], stdout=subp.PIPE, stderr=subp.PIPE)
 
-# returns the ssid of the connected ssid on the given interface
-def connected_to(interface):
-    # get the SSID connected on the interface
-    connectedP = subp.Popen(['iwgetid', interface, '-r'], stdout=subp.PIPE, stderr=subp.PIPE)
-    stdout, stderr = connectedP.communicate()
-    # return stdout with trimmed whitespace = connected ssid
-    return stdout.rstrip()
-""" 
-connects to a ssid, based on whether it exists.
-if it doesn't, makes a new connection, otherwise
-uses the existing
-""" 
-
 def connect(ssid, password):
+    """ 
+    Connects to a ssid, based on whether it exists.
+    if it doesn't, makes a new connection, otherwise
+    uses the existing
+    
+    :param ssid: The ssid to connect to
+    :param password: The password of the AP to connect to
+    
+    """ 
     knownNetworks = get_known()
 
     stdout, stderr = knownNetworks.communicate()
@@ -71,4 +74,23 @@ def connect(ssid, password):
 
     # when the network does not yet exist, create a new one
     if existing == False:
-        switch = subp.call(['nmcli', 'dev', 'wifi', 'con', ssid, 'password', password])        
+        switch = subp.call(['nmcli', 'dev', 'wifi', 'con', ssid, 'password', password])   
+
+def get_gateway(interface, test_class):
+    """
+    Gets the default gateway of the given interface
+    
+    :param interface: The interface on which to get
+    :param test_class: The class to fail when something goes wrong
+    :return: String of gateway
+    
+    """
+    # get the default gateway by parsing ip route's output
+    gatewayP1 = subp.Popen(['ip', 'route', 'show', 'dev', interface], stdout=subp.PIPE, stderr=subp.PIPE).communicate()[0]
+    gatewayMatches = re.search(r'^default\s+via\s+(?P<gw>[^\s]*)\s', gatewayP1, re.MULTILINE)
+    
+    if gatewayMatches == None
+        test_class.fail("Getting gateway failed")
+    gateway = gatewayMatches.group(1)
+    
+    return gateway
