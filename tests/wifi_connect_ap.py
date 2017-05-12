@@ -2,7 +2,6 @@
 import subprocess as subp
 import yaml
 from avocado import Test
-
 from utils import internet
 from utils import utils
 
@@ -19,6 +18,8 @@ class WifiConnectAP(Test):
     def connect_and_check(self, ssid, password):
         internet.connect(ssid, password)
 
-        pingResult = internet.pingtest_hard('8.8.8.8', self.interface, self)
+        gateway = internet.get_gateway(self.interface, self)
 
-        self.log.debug("internet is working on network {0}".format(ssid))
+        pingResult = internet.pingtest_hard(gateway, self.interface, self)
+
+        self.log.debug("Internet is working on network {0}".format(ssid))

@@ -34,21 +34,10 @@ class WifiSwitchAP(Test):
     def switch_con(self, ssid, password):		
         internet.connect(ssid, password)
 
-        # get the default gateway by parsing ip route's output
-        gatewayP1 = subp.Popen(['ip', 'route'], stdout=subp.PIPE, stderr=subp.PIPE)
-        gatewayP2 = subp.Popen(['awk', r'/default/ { print $3 }'], stdin=gatewayP1.stdout, stdout=subp.PIPE, stderr=subp.PIPE)
+        gateway = internet.get_gateway(self.interface, self)
 
-        gateway, stderr = gatewayP2.communicate()
-
-        # something went wrong while getting the gateway
-        if stderr != "":
-           self.fail("Getting gateway failed {0}".format(stderr))
-
-        # ping default gateway using the desired interface once then check for success
-        success = internet.pingtest(gateway, self.interface)
-
-        if success == 0:
-            self.fail("Internet is not available on network {0}, tried to ping {1}".format(ssid, gateway))
+        internet.pingtest_hard(gateway, self.interface, self)
+        
         self.log.debug("Internet is working on network {0}, pinged {1}".format(ssid, gateway))
             
 
