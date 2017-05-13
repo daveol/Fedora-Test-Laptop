@@ -41,22 +41,9 @@ def get_known(type = ""):
     :return: The list of known networks
     
     """
-    main_loop = None
-    main_loop = GLib.MainLoop()
     settings = NMClient.RemoteSettings.new(None);
-    settings.connect("connections-read", connections_read, main_loop)
-    main_loop.run()
     connections = settings.list_connections()
     return connections #subp.Popen(['nmcli', '-t', '--fields', 'NAME,UUID,ACTIVE,TYPE', 'c'], stdout=subp.PIPE, stderr=subp.PIPE)
-
-
-def connections_read(settings,ml):
-    """
-    Callback for read-interfaces
-    """
-    for c in settings.list_connections():
-         "%27s : %s" % 		(c.get_id(), c.get_uuid())
-    ml.quit()
 
 def connect(ssid, password):
     """ 
