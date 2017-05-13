@@ -6,7 +6,7 @@ from utils import internet
 from utils import utils
 
 class WifiSwitchAP(Test):
-    def __init__(self):
+    def setUp(self):
         self.wifidata = utils.load_yaml(self, "data/internet_data.yaml")
 
     def test_switch_ap(self):
