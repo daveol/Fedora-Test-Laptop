@@ -1,6 +1,8 @@
 import subprocess as subp
 import re
 
+from gi.repository import GLib, NetworkManager, NMClient
+
 def pingtest(ip, interface):
     """
     pingtest checks whether the IP is reachable on the given
@@ -32,14 +34,29 @@ def pingtest_hard(ip, interface, test_class):
     if success == False:
        test_class.fail("Ping on interface {0} to ip {1} failed".format(interface, ip));
 
-def get_known():
+def get_known(type = ""):
     """
     Returns a list of known (existing) networks in the system
     
     :return: The list of known networks
     
     """
-    return subp.Popen(['nmcli', '-t', '--fields', 'NAME,UUID,ACTIVE,TYPE', 'c'], stdout=subp.PIPE, stderr=subp.PIPE)
+    main_loop = None
+    main_loop = GLib.MainLoop()
+    settings = NMClient.RemoteSettings.new(None);
+    settings.connect("connections-read", connections_read, main_loop)
+    main_loop.run()
+    connections = settings.list_connections()
+    return connections #subp.Popen(['nmcli', '-t', '--fields', 'NAME,UUID,ACTIVE,TYPE', 'c'], stdout=subp.PIPE, stderr=subp.PIPE)
+
+
+def connections_read(settings,ml):
+    """
+    Callback for read-interfaces
+    """
+    for c in settings.list_connections():
+         "%27s : %s" % 		(c.get_id(), c.get_uuid())
+    ml.quit()
 
 def connect(ssid, password):
     """ 
@@ -53,10 +70,10 @@ def connect(ssid, password):
     """ 
     knownNetworks = get_known()
 
-    stdout, stderr = knownNetworks.communicate()
+    #stdout, stderr = knownNetworks.communicate()
 
     # each connection is seperated by '\n'
-    connectionList = stdout.split("\n")
+    #connectionList = stdout.split("\n")
     existing = False
 
     """ 
@@ -64,13 +81,12 @@ def connect(ssid, password):
     if the network ssid is found, it will connect using its UUID
     if not found, a new connection will be created and connected to
     """
-    for con in connectionList:
-        cParts = con.split(":") # nmcli -t output is seperated by :
+    for con in knownNetworks:
+        #cParts = con.split(":") # nmcli -t output is seperated by :
         # see if the ssid exist, and has the correct type
-        if ssid in cParts and cParts[3] == "802-11-wireless":
+        if con.get_id() == ssid and con.get_connection_type() == "802-11-wireless":
            existing = True
-           if cParts[2] != "yes": # yes means active => don't reconnect
-              subp.call(['nmcli', 'con', 'up', 'uuid', cParts[1]]) # cParts[1] contains uuid
+           subp.call(['nmcli', 'con', 'up', 'uuid', con.get_uuid()]) # cParts[1] contains uuid
 
     # when the network does not yet exist, create a new one
     if existing == False:
