@@ -13,7 +13,7 @@ def _cat(file_name):
     return open(file_name).read().strip()
 
 
-class Temps(Test):
+class CpuTemps(Test):
 
     def __init__(self):
         self.__probes = glob.glob(
