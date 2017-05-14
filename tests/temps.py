@@ -37,6 +37,10 @@ class Temps(Test):
         return temperatures
 
     def test_idle(self):
+        if len(self.__probes):
+            self.fail('No probes found')
+            return 1
+
         # be idle
         time.sleep(60)
 
@@ -46,6 +50,10 @@ class Temps(Test):
                 self.fail("%s is more than 60 degrees: %i", probe, temp)
 
     def test_load(self):
+        if len(self.__probes) < 1:
+            self.fail('No probes found')
+            return 1
+
         cores_idle = {}
         procs = []
 
@@ -54,6 +62,10 @@ class Temps(Test):
             label = probe.replace('input', 'label')
             if os.stat(label) and 'Cpu' in _cat(label):
                 cores[probe] = temp
+
+        if len(cores_idle.keys()) < 1:
+            self.fail("no probes found with cpu label")
+            return 1
 
         # Create cpu load
         for core in range(multiprocessing.cpu_count()):
