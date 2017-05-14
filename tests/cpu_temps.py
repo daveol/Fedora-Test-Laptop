@@ -61,10 +61,10 @@ class CpuTemps(Test):
         for probe, temp in self.get_values():
             label = probe.replace('input', 'label')
             if os.stat(label) and 'Cpu' in _cat(label):
-                cores[probe] = temp
+                cores_idle[probe] = temp
 
         if len(cores_idle.keys()) < 1:
-            self.fail("no probes found with cpu label")
+            self.skip("no probes found with cpu label")
             return 1
 
         # Create cpu load
