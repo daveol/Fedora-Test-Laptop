@@ -2,6 +2,7 @@ import os
 import os.path
 import glob
 import time
+import multiprocessing
 
 from avocado import Test
 
@@ -41,8 +42,32 @@ class Temps(Test):
 
         #check them
         for probe, temp in self.get_values():
-            if temp < 60:
+            if temp > 60:
                 self.fail("%s is more than 60 degrees: %i", probe, temp)
 
     def test_load(self):
-        self.fail("todo: implement")
+        cores_idle = {}
+        procs = []
+
+        # Get idle results for cpu('s)
+        for probe, temp in self.get_values():
+            label = probe.replace('input', 'label')
+            if os.stat(label) and 'Cpu' in _cat(label):
+                cores[probe] = temp
+
+        # Create cpu load
+        for core in range(multiprocessing.cpu_count()):
+            procs.append(subprocess.Popen(['sha256sum','/dev/random']))
+
+        # Give some heat-up time
+        time.sleep(20)
+
+        # test them again
+        for probe, temp in self.get_values():
+            if probe in cores_idle.keys():
+               if cores_idle[probe] + 5 < temp:
+                   self.fail('No rise in temperature detected for %s', probe)
+
+        # clean the processes
+        for proc in procs:
+            proc.kill()
