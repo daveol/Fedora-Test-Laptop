@@ -43,7 +43,7 @@ def get_known(type = ""):
     """
     settings = NMClient.RemoteSettings.new(None);
     connections = settings.list_connections()
-    return connections #subp.Popen(['nmcli', '-t', '--fields', 'NAME,UUID,ACTIVE,TYPE', 'c'], stdout=subp.PIPE, stderr=subp.PIPE)
+    return connections
 
 def connect(ssid, password):
     """ 
@@ -57,10 +57,6 @@ def connect(ssid, password):
     """ 
     knownNetworks = get_known()
 
-    #stdout, stderr = knownNetworks.communicate()
-
-    # each connection is seperated by '\n'
-    #connectionList = stdout.split("\n")
     existing = False
 
     """ 
@@ -73,11 +69,15 @@ def connect(ssid, password):
         # see if the ssid exist, and has the correct type
         if con.get_id() == ssid and con.get_connection_type() == "802-11-wireless":
            existing = True
-           subp.call(['nmcli', 'con', 'up', 'uuid', con.get_uuid()]) # cParts[1] contains uuid
+           connected = subp.call(['nmcli', 'con', 'up', 'uuid', con.get_uuid()]) # cParts[1] contains uuid
 
     # when the network does not yet exist, create a new one
     if existing == False:
-        switch = subp.call(['nmcli', 'dev', 'wifi', 'con', ssid, 'password', password])   
+        connected = subp.call(['nmcli', 'dev', 'wifi', 'con', ssid, 'password', password])   
+
+    if connected == 0:
+        return True
+    return False
 
 def get_gateway(interface, test_class):
     """
@@ -93,7 +93,7 @@ def get_gateway(interface, test_class):
     gatewayMatches = re.search(r'^default\s+via\s+(?P<gw>[^\s]*)\s', gatewayP1, re.MULTILINE)
     
     if gatewayMatches == None:
-        test_class.fail("Getting gateway failed")
+        return 0;
     gateway = gatewayMatches.group(1)
     
     return gateway
