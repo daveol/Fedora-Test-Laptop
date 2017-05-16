@@ -1,9 +1,7 @@
 #!/usr/bin/env python
-import subprocess as subp
-import yaml
+
 from avocado import Test
-from utils import internet
-from utils import utils
+from utils import internet, utils
 
 class WifiConnectAP(Test):
     def test(self):
