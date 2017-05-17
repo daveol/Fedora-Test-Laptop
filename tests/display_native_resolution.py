@@ -4,6 +4,10 @@ from utils import utils
 
 from utils.monitor import Monitor
 from utils.hwinfo import HWinfo
+"""
+above 2 lines were files imported from 
+benzea repo -- later adoption should use:
+"""
 #from fed_laptoptest.monitors import Monitor
 #from fed_laptoptest.hwinfo import HWinfo
 
@@ -11,7 +15,11 @@ from gi.repository import Gtk, Gdk, GLib
 
 class DisplayNativeResolution(Test):
     """
-    pass
+    Gets the current resolution of the screen and
+    tests the value against the expected value
+    gathered from data/resolutions.yaml
+    
+    TODO: find a better way to fetch monitor res
 
     :avocado: tags=display
     """
