@@ -1,4 +1,4 @@
 tests/data/internet_data.yaml
-test/data/bluetooth_data.yaml
+tests/data/bluetooth_data.yaml
 
 *.pyc
