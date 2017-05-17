@@ -15,11 +15,11 @@ class BluetoothPingTest(Test):
       testdata = utils.load_yaml(self, "data/bluetooth_data.yaml")
       self.targetDeviceMac = testdata['addr']
 
-      p = subp.Popen(['sudo', 'l2ping', self.targetDeviceMac ,'-c', '5'], stderr=STDOUT, stdout = PIPE)
+      p = subp.Popen(['sudo', 'l2ping', self.targetDeviceMac ,'-c', '5'], stdout=subp.PIPE, stderr=subp.PIPE)
       result = p.communicate()[0]
       returnCode = p.returncode
 
       if returnCode != 0 :
-          self.fail("BluetoothPingTest Failed.")
+          self.fail("Could not ping " + self.targetDeviceMac)
 
-      self.log.debug("Bluetooth ping test succeeded: " + result)
+     self.log.debug("Ping test working {0}".format(result))
