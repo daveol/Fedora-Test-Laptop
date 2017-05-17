@@ -4,6 +4,11 @@ from avocado import Test
 from utils import internet, utils
 
 class WifiConnectAP(Test):
+    """
+    Uses the first access point from internet_data to ping the default
+    gateway using internet utils.
+    
+    """
     def test(self):
         wifidata = utils.load_yaml(self, "data/internet_data.yaml")
 
