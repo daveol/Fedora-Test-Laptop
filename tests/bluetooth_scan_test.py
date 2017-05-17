@@ -10,7 +10,7 @@ bluetooth device that is specified in the YAML file is available.
 '''
 
 class BluetoothScanTest(Test):
-  def test():
+  def test(self):
       testdata = utils.load_yaml(self, "data/bluetooth_data.yaml")
       self.targetDeviceMac = testdata['addr']
 
