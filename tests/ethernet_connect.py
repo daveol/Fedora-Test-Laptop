@@ -1,12 +1,14 @@
 #!/usr/bin/env python
-import subprocess as subp
-import yaml
 
 from avocado import Test
-from utils import internet
-from utils import utils
+from utils import internet, utils
 
 class EthernetConnect(Test):
+    """
+    Uses the wired interface from internet_data to ping the default
+    gateway using internet utils.
+    
+    """
     def test(self):
         internetdata = utils.load_yaml(self, "data/internet_data.yaml")
 

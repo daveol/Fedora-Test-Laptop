@@ -1,14 +1,16 @@
 #!/usr/bin/env python
-import subprocess as subp
-import yaml
-from avocado import Test
 
+import subprocess as subp
+from avocado import Test
 from utils import utils
 
 class WifiScanAP(Test):
+    """
+    Gets the first two access points in internet_data and scans the 
+    network to find these.
+    
+    """
     def test(self):
-        # has temp self arg ** This line should be changed when
-        #                      implemented in Benjamins env **
         wifidata = utils.load_yaml(self, "data/internet_data.yaml")
         ap1 = wifidata['access_point_1']['ssid']
         ap2 = wifidata['access_point_2']['ssid']
@@ -20,7 +22,7 @@ class WifiScanAP(Test):
         p = subp.Popen(['nmcli', 'device', 'wifi', 'list'], stdout=subp.PIPE, stderr=subp.PIPE)
 
         stdout, stderr = p.communicate()
-        scan1 = stdout.rstrip()
+        scan1 = stdout
 
         if ap1 not in scan1:
             self.fail("First AP not found {0}".format(ap1))

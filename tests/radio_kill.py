@@ -6,6 +6,15 @@ from avocado import Test
 from utils import internet, utils
 
 class RadioKill(Test):
+    """
+    Gets the first access point from internet_data and the MAC address
+    from the first bluetooth enabled device from bluetooth_data.
+    Radio signals are blocked and the Wi-Fi and Bluetooth connections
+    should fail.
+    Radio signals are unblocked and the Wi-Fi and Bluetooth connections
+    should work.
+    
+    """
     def test(self):
         wifidata = utils.load_yaml(self, "data/internet_data.yaml")
         accessPoint = wifidata['access_point_1']['ssid']

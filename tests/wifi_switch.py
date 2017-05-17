@@ -1,11 +1,17 @@
 #!/usr/bin/env python
-import subprocess as subp
 
 from avocado import Test
-from utils import internet
-from utils import utils
+from utils import internet, utils
 
 class WifiSwitchAP(Test):
+    """
+    First, the two first access points are loaded from internet_data. The first
+    access point will be used to test the connection, then the second one, to
+    test a switch of access point.
+    Secondly, the first and 5GHz access points are loaded from internet_data. The
+    test sequence remains the same as in the first test.
+    
+    """
     def setUp(self):
         self.wifidata = utils.load_yaml(self, "data/internet_data.yaml")
 
