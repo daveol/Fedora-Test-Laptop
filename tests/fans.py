@@ -3,6 +3,7 @@ import os.path
 import glob
 import time
 import multiprocessing
+import subprocess
 
 from avocado import Test
 
@@ -15,39 +16,42 @@ def _cat(file_name):
 
 class Fans(Test):
 
-    def __init__(self):
+    def setUp(self):
         self.__probes = glob.glob(
                 os.path.join(HWMON_DIR, 'hwmon[0-9]/fan[1-9]_input')
         )
 
+        if len(self.__probes) < 1:
+            self.skip('No fan monitoring found')
+
     def get_values(self):
         fans = {}
         for fan in self.__probes:
-            fans[fan] = _cat(fan)
+            fans[fan] = int(_cat(fan))
 
         return fans
 
     def test_idle(self):
-        if len(self.__probes):
-            self.skip('No fan monitoring found')
-
-        # be idle
+        """
+        Test the idle fan speeds
+        """
+        # idle
         time.sleep(60)
 
-        #check them
-        for fan, rpm in self.get_values:
+        # check them
+        for fan, rpm in self.get_values().iteritems():
             if rpm > 4000:
                 self.fail("%s is more than 4000RPM in idle: %i", fan, rpm)
 
     def test_load(self):
-        if len(self.__probes) < 1:
-            self.skip('No fan monitoring found')
-
+        """
+        Test the load fan speeds
+        """
         speeds = {}
         procs = []
 
         # Get idle results for cpu('s)
-        for probe, speed in self.get_values():
+        for probe, speed in self.get_values().iteritems():
             speeds[probe] = speed
 
 
@@ -63,6 +67,6 @@ class Fans(Test):
             proc.kill()
 
         # test them again
-        for probe, speed in self.get_values():
+        for probe, speed in self.get_values().iteritems():
             if speeds[probe] < speed:
                 self.fail('No rise in speed detected for %s', probe)

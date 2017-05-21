@@ -3,6 +3,7 @@ import os.path
 import glob
 import time
 import multiprocessing
+import subprocess
 
 from avocado import Test
 
@@ -15,10 +16,15 @@ def _cat(file_name):
 
 class CpuTemps(Test):
 
-    def __init__(self):
+    def setUp(self):
         self.__probes = glob.glob(
                 os.path.join(HWMON_DIR, 'hwmon[0-9]/temp[1-9]_input')
         )
+
+        if len(self.__probes) < 1:
+            self.skip('No probes found')
+            return 1
+
 
     def get_values(self):
         """
@@ -26,7 +32,6 @@ class CpuTemps(Test):
 
         returns an dict with path and temperatures
         """
-
         temperatures = {}
 
         # Iterate over probes
@@ -37,34 +42,33 @@ class CpuTemps(Test):
         return temperatures
 
     def test_idle(self):
-        if len(self.__probes):
-            self.fail('No probes found')
-            return 1
-
+        """
+        Test idle temperatures
+        """
         # be idle
         time.sleep(60)
 
         #check them
-        for probe, temp in self.get_values():
+        for probe, temp in self.get_values().iteritems():
             if temp > 60:
                 self.fail("%s is more than 60 degrees: %i", probe, temp)
 
     def test_load(self):
-        if len(self.__probes) < 1:
-            self.fail('No probes found')
-            return 1
-
+        """
+        Test load temperatures
+        """
         cores_idle = {}
         procs = []
 
         # Get idle results for cpu('s)
-        for probe, temp in self.get_values():
+        for probe, temp in self.get_values().iteritems():
             label = probe.replace('input', 'label')
-            if os.stat(label) and 'Cpu' in _cat(label):
-                cores_idle[probe] = temp
+            if os.path.isfile(label):
+                if 'CPU' in _cat(label):
+                    cores_idle[probe] = temp
 
         if len(cores_idle.keys()) < 1:
-            self.skip("no probes found with cpu label")
+            self.fail("no probes found with cpu label")
             return 1
 
         # Create cpu load
@@ -74,12 +78,12 @@ class CpuTemps(Test):
         # Give some heat-up time
         time.sleep(20)
 
-        # test them again
-        for probe, temp in self.get_values():
-            if probe in cores_idle.keys():
-               if cores_idle[probe] + 5 < temp:
-                   self.fail('No rise in temperature detected for %s', probe)
-
         # clean the processes
         for proc in procs:
             proc.kill()
+
+        # test them again
+        for probe, temp in self.get_values().iteritems():
+            if probe in cores_idle.keys():
+               if cores_idle[probe] + 5 < temp:
+                   self.fail('No rise in temperature detected for %s', probe)
