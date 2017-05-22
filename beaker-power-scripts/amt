@@ -5,4 +5,4 @@ if [ "$power_mode" == interrupt ] ; then
     exit 1
 fi
 
-fence_amt -v -x -a "$power_address" -p "$power_pass" -n "$power_id" -o "$power_mode"
+fence_amt -v -a "$power_address" -p "$power_pass" -n "$power_id" -o "$power_mode"
