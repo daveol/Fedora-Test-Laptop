@@ -9,10 +9,10 @@ This test will scan for available bluetooth devices and checks if the
 bluetooth device that is specified in the YAML file is available.
 '''
 
-class BluetoothScanTest(Test):
+class BluetoothScan(Test):
   def test(self):
       testdata = utils.load_yaml(self, "data/bluetooth_data.yaml")
-      self.targetDeviceMac = testdata['addr']
+      self.targetDeviceMac = testdata['testdata']['addr']
 
       results = bluetooth.discover_devices(lookup_names = True)
 
