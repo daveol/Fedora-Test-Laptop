@@ -11,18 +11,18 @@ If the test fails, a fail exception will be raised.
 '''
 class BluetoothPing(Test):
     def test(self):
-      testdata = utils.load_yaml(self, "data/bluetooth_data.yaml")
-      self.targetDeviceMac = testdata['testdata']['addr']
-
-      p = self.pingtest()
-
-      if p != 0 :
-          self.fail("Could not ping " + self.targetDeviceMac)
-
-      self.log.debug("Ping test working {0}".format(result))
+        testdata = utils.load_yaml(self, "data/bluetooth_data.yaml")
+        self.targetDeviceMac = testdata['testdata']['addr']
+        
+        p = self.pingtest()
+        
+        if p != 0 :
+            self.fail("Could not ping " + self.targetDeviceMac)
+        
 
     def pingtest(self):
-      p= subp.Popen('l2ping', self.targetDeviceMac ,'-c', '5'], stdout=subp.PIPE, stderr=subp.PIPE)
-      result = p.communicate()[0]
-      returnCode = p.returncode
-      return returnCode
+        p= subp.Popen(['pkexec', 'l2ping', self.targetDeviceMac ,'-c', '5'], stdout=subp.PIPE, stderr=subp.PIPE)
+        result = p.communicate()[0]
+        returnCode = p.returncode
+        self.log.debug("Ping test working {0}".format(result))
+        return returnCode
