@@ -15,51 +15,65 @@ class RadioKill(Test):
     should work.
     
     """
-    def test(self):
-        wifidata = utils.load_yaml(self, "data/internet_data.yaml")
-        accessPoint = wifidata['access_point_1']['ssid']
-        accessPointPass = wifidata['access_point_1']['pass']
-        self.interface = wifidata['wireless_interface']
-
-        bluetoothdata = utils.load_yaml(self, "data/bluetooth_data.yaml")
-        self.targetDeviceMac = bluetoothdata['testdata']['addr']
-
-        self.block_and_verify(accessPoint, accessPointPass)
-        self.unblock_and_verify(accessPoint, accessPointPass)
+    def setUp(self):
+        self.wifidata = utils.load_yaml(self, "data/internet_data.yaml")
+        self.bluetoothdata = utils.load_yaml(self, "data/bluetooth_data.yaml")
         
-    def block_and_verify(self, ssid, password):
-        p = subp.call(['rfkill', 'block', 'all'])     
+        if 'wireless_interface' not in wifidata:
+            self.skip("No wireless interface in the yaml config")
 
-        connected = internet.connect(ssid, password)
+        if 'access_point_1' not in wifidata:
+            self.skip("No AP found in the yaml config")
+
+        if ('ssid' not in wifidata['access_point_1'] or
+            'pass' not in wifidata['access_point_1']):
+            self.skip("No AP data found in the yaml config")
+	    
+	    if 'testdata' not in bluetoothdata:
+            self.skip("No bluetooth data found in the yaml config")
+            
+        if 'addr' not in bluetoothdata['testdata']:
+            self.skip("No bluetooth addr found in the yaml config")
+    
+        self.interface = wifidata['wireless_interface']
+        self.ap_ssid = wifidata['access_point_1']['ssid']
+	    self.ap_pass = wifidata['access_point_1']['pass']
+	    self.targetDeviceMac = bluetoothdata['testdata']['addr']
+    
+    def test(self):
+        self.block_and_verify()
+        self.unblock_and_verify()
+        
+    def block_and_verify(self):
+        p = subp.call(['rfkill', 'block', 'all'])
+
+        connected = internet.connect(self.ap_ssid, self.ap_pass)
 
         if(connected == True):
-            self.fail("Wi-Fi still works despite radio kill on network {0}".format(ssid))
+            self.fail("Wi-Fi still works despite radio kill on network {0}".format(self.ap_ssid))
         
         p = subp.Popen(['l2ping', self.targetDeviceMac ,'-c', '5'], stderr= subp.STDOUT, stdout = subp.PIPE)
         result = p.communicate()[0]
         bluetootResult = p.returncode
 
-        if(bluetootResult == 0):
+        if bluetootResult == 0:
             self.fail("Bluetooth still works despite radio kill on device {0}".format(self.targetDeviceMac))
 
-    def unblock_and_verify(self, ssid, password):
-        p = subp.call(['rfkill', 'unblock', 'all'])     
+    def unblock_and_verify(self):
+        p = subp.call(['rfkill', 'unblock', 'all'])
 
         time.sleep(5);
 
-        internet.connect(ssid, password)
+        internet.connect(self.ap_ssid, self.ap_pass)
         gateway = internet.get_gateway(self.interface, self)
         pingResult = internet.pingtest_hard(gateway, self.interface, self)
 
-        self.log.debug("Internet is working on network {0}".format(ssid))
+        self.log.debug("Internet is working on network {0}".format(self.ap_ssid))
             
         p = subp.Popen(['sudo', 'l2ping', self.targetDeviceMac ,'-c', '1'], stderr= subp.STDOUT, stdout = subp.PIPE)
         result = p.communicate()[0]
         bluetoothResult = p.returncode
 
-        if(bluetoothResult != 0):
+        if bluetoothResult != 0:
             self.fail("Bluetooth does not work on device {0}".format(self.targetDeviceMac))
         self.log.debug("Bluetooth is working on device {0}".format(self.targetDeviceMac))
-
-
-    

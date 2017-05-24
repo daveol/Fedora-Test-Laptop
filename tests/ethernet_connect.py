@@ -9,11 +9,15 @@ class EthernetConnect(Test):
     gateway using internet utils.
     
     """
-    def test(self):
-        internetdata = utils.load_yaml(self, "data/internet_data.yaml")
-
+    def setUp(self):
+        self.internetdata = utils.load_yaml(self, "data/internet_data.yaml")
+        
+        if 'wired_interface' not in wifidata:
+            self.skip("No wired interface in the yaml config")
+            
         self.interface = internetdata['wired_interface']
-
+    
+    def test(self):
         gateway = internet.get_gateway(self.interface, self)
 
         pingResult = internet.pingtest_hard(gateway, self.interface, self)
