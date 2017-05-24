@@ -45,5 +45,7 @@ class DisplayNativeResolution(Test):
         expected_height = int(resolutions[manufacturer][model]['height'])
 
         if monitor.width != expected_width or monitor.height != expected_height:
-            self.fail("Internal display did not match expected resolution expected {0}x{1} got {2}x{3}".format(
-            expected_width, expected_height, monitor.width, monitor.height))
+            self.fail(
+                "Internal display did not match expected resolution, expected: "
+                "{0}x{1} got: {2}x{3}".format(expected_width, expected_height, 
+                monitor.width, monitor.height))
