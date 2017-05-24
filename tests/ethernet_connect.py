@@ -12,7 +12,7 @@ class EthernetConnect(Test):
     def setUp(self):
         internetdata = utils.load_yaml(self, "data/internet_data.yaml")
 
-        if 'wired_interface' not in wifidata:
+        if 'wired_interface' not in internetdata:
             self.skip("No wired interface in the yaml config")
 
         self.interface = internetdata['wired_interface']
