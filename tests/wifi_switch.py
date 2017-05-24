@@ -41,11 +41,11 @@ class WifiSwitchAP(Test):
 
         self.interface = wifidata['wireless_interface']
         self.ap1_ssid = wifidata['access_point_1']['ssid']
-	    self.ap1_pass = wifidata['access_point_1']['pass']
-	    self.ap2_ssid = wifidata['access_point_2']['ssid']
-	    self.ap2_pass = wifidata['access_point_2']['pass']
-	    self.ap5ghz_ssid = wifidata['access_point_5ghz']['ssid']
-	    self.ap5ghz_pass = wifidata['access_point_5ghz']['pass']
+        self.ap1_pass = wifidata['access_point_1']['pass']
+        self.ap2_ssid = wifidata['access_point_2']['ssid']
+        self.ap2_pass = wifidata['access_point_2']['pass']
+        self.ap5ghz_ssid = wifidata['access_point_5ghz']['ssid']
+        self.ap5ghz_pass = wifidata['access_point_5ghz']['pass']
 
     def test_switch_ap(self):
         self.switch_con(self.ap1_ssid, self.ap1_pass)
