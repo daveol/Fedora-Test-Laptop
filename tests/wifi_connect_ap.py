@@ -9,14 +9,25 @@ class WifiConnectAP(Test):
     gateway using internet utils.
     
     """
-    def test(self):
+    def setUp(self):
         wifidata = utils.load_yaml(self, "data/internet_data.yaml")
 
-        accessPoint = wifidata['access_point_1']['ssid']
-        accessPointPass = wifidata['access_point_1']['pass']
-        self.interface = wifidata['wireless_interface']
+        if 'wireless_interface' not in wifidata:
+            self.skip("No wireless interface in the yaml config")
 
-        self.connect_and_check(accessPoint, accessPointPass)
+        if 'access_point_1' not in wifidata:
+            self.skip("No AP found in the yaml config")
+
+        if ('ssid' not in wifidata['access_point_1'] or
+            'pass' not in wifidata['access_point_1']):
+            self.skip("No AP found in the yaml config")
+
+
+        self.ap_ssid = wifidata['access_point_1']['ssid']
+	self.ap_pass = wifidata['access_point_1']['pass']
+
+    def test(self):
+        self.connect_and_check(self.ap_ssid, self.ap_pass)
 
     def connect_and_check(self, ssid, password):
         internet.connect(ssid, password)

@@ -10,7 +10,7 @@ class WifiSwitchAP(Test):
     test a switch of access point.
     Secondly, the first and 5GHz access points are loaded from internet_data. The
     test sequence remains the same as in the first test.
-    
+
     """
     def setUp(self):
         self.wifidata = utils.load_yaml(self, "data/internet_data.yaml")
@@ -25,7 +25,7 @@ class WifiSwitchAP(Test):
 
         self.switch_con(switchFrom, switchFromPass)
         self.switch_con(switchTo, switchToPass)
-        
+
     def test_switch_freq(self):
         wifidata = self.wifidata
         switchFrom = wifidata['access_point_1']['ssid']
@@ -37,14 +37,14 @@ class WifiSwitchAP(Test):
         self.switch_con(switchFrom, switchFromPass)
         self.switch_con(switchTo, switchToPass)
 
-    def switch_con(self, ssid, password):		
+    def switch_con(self, ssid, password):
         internet.connect(ssid, password)
 
         gateway = internet.get_gateway(self.interface, self)
 
         internet.pingtest_hard(gateway, self.interface, self)
-        
+
         self.log.debug("Internet is working on network {0}, pinged {1}".format(ssid, gateway))
-            
+
 
 
