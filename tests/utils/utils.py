@@ -22,6 +22,9 @@ def load_yaml(test_class, path):
     """
     try:
         with open(path, 'r') as stream:
-            return yaml.load(stream)
+            try:
+                return yaml.load(stream)
+            except yaml.YAMLError as ex:
+                test_class.skip("Yaml file could not be loaded")
     except IOError as exc:
-        test_class.skip("Yaml file could not be loaded")
+        test_class.skip("Yaml file could not be opened")

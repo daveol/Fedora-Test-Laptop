@@ -13,12 +13,12 @@ class RadioKill(Test):
     should fail.
     Radio signals are unblocked and the Wi-Fi and Bluetooth connections
     should work.
-    
+
     """
     def setUp(self):
-        self.wifidata = utils.load_yaml(self, "data/internet_data.yaml")
-        self.bluetoothdata = utils.load_yaml(self, "data/bluetooth_data.yaml")
-        
+        wifidata = utils.load_yaml(self, "data/internet_data.yaml")
+        bluetoothdata = utils.load_yaml(self, "data/bluetooth_data.yaml")
+
         if 'wireless_interface' not in wifidata:
             self.skip("No wireless interface in the yaml config")
 
@@ -28,22 +28,22 @@ class RadioKill(Test):
         if ('ssid' not in wifidata['access_point_1'] or
             'pass' not in wifidata['access_point_1']):
             self.skip("No AP data found in the yaml config")
-	    
+
 	    if 'testdata' not in bluetoothdata:
             self.skip("No bluetooth data found in the yaml config")
-            
+
         if 'addr' not in bluetoothdata['testdata']:
             self.skip("No bluetooth addr found in the yaml config")
-    
+
         self.interface = wifidata['wireless_interface']
         self.ap_ssid = wifidata['access_point_1']['ssid']
-	    self.ap_pass = wifidata['access_point_1']['pass']
-	    self.targetDeviceMac = bluetoothdata['testdata']['addr']
-    
+        self.ap_pass = wifidata['access_point_1']['pass']
+        self.targetDeviceMac = bluetoothdata['testdata']['addr']
+
     def test(self):
         self.block_and_verify()
         self.unblock_and_verify()
-        
+
     def block_and_verify(self):
         p = subp.call(['rfkill', 'block', 'all'])
 
@@ -51,12 +51,11 @@ class RadioKill(Test):
 
         if(connected == True):
             self.fail("Wi-Fi still works despite radio kill on network {0}".format(self.ap_ssid))
-        
-        p = subp.Popen(['l2ping', self.targetDeviceMac ,'-c', '5'], stderr= subp.STDOUT, stdout = subp.PIPE)
-        result = p.communicate()[0]
-        bluetootResult = p.returncode
 
-        if bluetootResult == 0:
+        p = subp.Popen(['l2ping', self.targetDeviceMac ,'-c', '5'], stderr= subp.STDOUT, stdout = subp.PIPE)
+        bluetoothResult = p.returncode
+
+        if bluetoothResult == 0:
             self.fail("Bluetooth still works despite radio kill on device {0}".format(self.targetDeviceMac))
 
     def unblock_and_verify(self):
@@ -69,9 +68,8 @@ class RadioKill(Test):
         pingResult = internet.pingtest_hard(gateway, self.interface, self)
 
         self.log.debug("Internet is working on network {0}".format(self.ap_ssid))
-            
+
         p = subp.Popen(['sudo', 'l2ping', self.targetDeviceMac ,'-c', '1'], stderr= subp.STDOUT, stdout = subp.PIPE)
-        result = p.communicate()[0]
         bluetoothResult = p.returncode
 
         if bluetoothResult != 0:

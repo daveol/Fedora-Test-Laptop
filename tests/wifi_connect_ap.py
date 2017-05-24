@@ -7,11 +7,11 @@ class WifiConnectAP(Test):
     """
     Uses the first access point from internet_data to ping the default
     gateway using internet utils.
-    
+
     """
     def setUp(self):
         wifidata = utils.load_yaml(self, "data/internet_data.yaml")
-              
+
         if 'wireless_interface' not in wifidata:
             self.skip("No wireless interface in the yaml config")
 
@@ -36,4 +36,4 @@ class WifiConnectAP(Test):
 
         pingResult = internet.pingtest_hard(gateway, self.interface, self)
 
-        self.log.debug("Internet is working on network {0}".format(ssid))
+        self.log.debug("Internet is working on network {0}".format(self.ap_ssid))
