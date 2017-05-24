@@ -8,11 +8,11 @@ class WifiScanAP(Test):
     """
     Gets the first two access points in internet_data and scans the 
     network to find these.
-    
+
     """
     def setUp(self):
-        self.wifidata = utils.load_yaml(self, "data/internet_data.yaml")
-        
+        wifidata = utils.load_yaml(self, "data/internet_data.yaml")
+
         if 'access_point_1' not in wifidata:
             self.skip("First AP not found in the yaml config")
 
@@ -21,11 +21,11 @@ class WifiScanAP(Test):
 
         self.ap1_ssid = wifidata['access_point_1']['ssid']
         self.ap2_ssid = wifidata['access_point_2']['ssid']
-    
+
     def test(self):
         self.scan_ap();
 
-    def scan_ap(self):        
+    def scan_ap(self):
         p = subp.Popen(['nmcli', 'device', 'wifi', 'list'], stdout=subp.PIPE, stderr=subp.PIPE)
 
         stdout, stderr = p.communicate()
