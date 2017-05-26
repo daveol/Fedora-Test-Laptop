@@ -10,16 +10,15 @@ class EthernetConnect(Test):
     
     """
     def setUp(self):
-        internetdata = utils.load_yaml(self, "data/internet_data.yaml")
-
-        if 'wired_interface' not in internetdata:
-            self.skip("No wired interface in the yaml config")
-
-        self.interface = internetdata['wired_interface']
+        self.wiredInterfaces = internet.get_interfaces('ethernet')
 
     def test(self):
-        gateway = internet.get_gateway(self.interface, self)
+        if len(self.wiredInterfaces) == 0:
+            self.fail("No ethernet devices available")
 
-        pingResult = internet.pingtest_hard(gateway, self.interface, self)
+        for interface in self.wiredInterfaces:
+            gateway = internet.get_gateway(interface, self)
 
-        self.log.debug("Internet is working on ethernet interface {0}".format(self.interface))
+            pingResult = internet.pingtest_hard(gateway, interface, self)
+
+            self.log.debug("Internet is working on ethernet interface {0}".format(interface))       
