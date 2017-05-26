@@ -97,3 +97,23 @@ def get_gateway(interface, test_class):
     gateway = gatewayMatches.group(1)
     
     return gateway
+
+def get_interfaces(if_type):
+    """
+    Gets the network adapters of the given type
+    
+    :param if_type: The type of interface to look for
+    :return: List of found interfaces
+    
+    """
+    interfaces = [];
+    output = subp.Popen(['nmcli', '--fields', 'DEVICE,TYPE', 'device', 'status'], 
+                        stdout=subp.PIPE, stderr=subp.PIPE).communicate()[0]
+
+    interfaceMatches = re.findall('([a-zA-Z0-9]*)\s+'+if_type, output, re.MULTILINE)
+
+    for interface in interfaceMatches:
+        interfaces.append(interface)
+
+
+    return interfaces
