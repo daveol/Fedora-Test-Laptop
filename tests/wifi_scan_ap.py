@@ -3,6 +3,7 @@
 import subprocess as subp
 from avocado import Test
 from utils import utils
+from gi.repository import GLib, NetworkManager, NMClient
 
 class WifiScanAP(Test):
     """
@@ -26,14 +27,26 @@ class WifiScanAP(Test):
         self.scan_ap();
 
     def scan_ap(self):
-        p = subp.Popen(['nmcli', 'device', 'wifi', 'list'], stdout=subp.PIPE, stderr=subp.PIPE)
+    
+        #p = subp.Popen(['nmcli', 'device', 'wifi', 'list'], stdout=subp.PIPE, stderr=subp.PIPE)
+        #stdout, stderr = p.communicate()
+        #scan1 = stdout
+        
+        nmc = NM.Client.new(None)
+        devs = nmc.get_devices()
+        ssids = [];
 
-        stdout, stderr = p.communicate()
-        scan1 = stdout
+        for dev in devs:
+            if dev.get_device_type() == NM.DeviceType.WIFI:
+                for ap in dev.get_access_points():
+                    ssid = ap.get_ssid()
+                    if not ssid:
+                        continue
+                    ssids.append(NM.utils_ssid_to_utf8(ap.get_ssid().get_data()))    
 
-        if self.ap1_ssid not in scan1:
+        if self.ap1_ssid not in ssids:
             self.fail("First AP not found {0}".format(self.ap1_ssid))
-        if self.ap2_ssid not in scan1:
+        if self.ap2_ssid not in ssids:
             self.fail("Second AP not found {0}".format(self.ap2_ssid))
         self.log.debug("Both APs can be found")
 
