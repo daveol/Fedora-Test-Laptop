@@ -3,7 +3,7 @@
 import subprocess as subp
 from avocado import Test
 from utils import utils
-from gi.repository import GLib, NetworkManager, NMClient
+from gi.repository import NM
 
 class WifiScanAP(Test):
     """
