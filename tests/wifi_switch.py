@@ -15,9 +15,6 @@ class WifiSwitchAP(Test):
     def setUp(self):
         wifidata = utils.load_yaml(self, "data/internet_data.yaml")
 
-        if 'wireless_interface' not in wifidata:
-            self.skip("No wireless interface in the yaml config")
-
         if 'access_point_1' not in wifidata:
             self.skip("First AP not found in the yaml config")
 
@@ -39,7 +36,12 @@ class WifiSwitchAP(Test):
             'pass' not in wifidata['access_point_5ghz']):
             self.skip("5GHz AP data not found in the yaml config")
 
-        self.interface = wifidata['wireless_interface']
+        wireless_if = internet.get_interfaces('wifi')
+
+        if len(wireless_if) == 0:
+            self.skip("No wireless interface found")
+
+        self.interface = wireless_if[0]
         self.ap1_ssid = wifidata['access_point_1']['ssid']
         self.ap1_pass = wifidata['access_point_1']['pass']
         self.ap2_ssid = wifidata['access_point_2']['ssid']
