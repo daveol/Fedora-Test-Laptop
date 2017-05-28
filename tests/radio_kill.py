@@ -19,9 +19,6 @@ class RadioKill(Test):
         wifidata = utils.load_yaml(self, "data/internet_data.yaml")
         bluetoothdata = utils.load_yaml(self, "data/bluetooth_data.yaml")
 
-        if 'wireless_interface' not in wifidata:
-            self.skip("No wireless interface in the yaml config")
-
         if 'access_point_1' not in wifidata:
             self.skip("No AP found in the yaml config")
 
@@ -35,7 +32,12 @@ class RadioKill(Test):
         if 'addr' not in bluetoothdata['testdata']:
             self.skip("No bluetooth addr found in the yaml config")
 
-        self.interface = wifidata['wireless_interface']
+        wireless_if = internet.get_interfaces('wifi')
+
+        if len(wireless_if) == 0:
+            self.skip("No wireless interface found")
+
+        self.interface = wireless_if[0]
         self.ap_ssid = wifidata['access_point_1']['ssid']
         self.ap_pass = wifidata['access_point_1']['pass']
         self.targetDeviceMac = bluetoothdata['testdata']['addr']

@@ -1,5 +1,6 @@
 import subprocess as subp
 import re
+from gi.repository import NM
 
 from gi.repository import GLib, NetworkManager, NMClient
 
@@ -101,19 +102,21 @@ def get_gateway(interface, test_class):
 def get_interfaces(if_type):
     """
     Gets the network adapters of the given type
-    
-    :param if_type: The type of interface to look for
-    :return: List of found interfaces
+
+    :param if_type: The type of interface to look for (e.g. wifi)
+    :return: List of found interfaces that are ACTIVATED
     
     """
+    devtype = "NM.DeviceType." + if_type.upper()
+    devtype = eval(devtype)
+
+    nmc = NM.Client.new(None)
+    devs = nmc.get_devices()
     interfaces = [];
-    output = subp.Popen(['nmcli', '--fields', 'DEVICE,TYPE', 'device', 'status'], 
-                        stdout=subp.PIPE, stderr=subp.PIPE).communicate()[0]
 
-    interfaceMatches = re.findall('([a-zA-Z0-9]*)\s+'+if_type, output, re.MULTILINE)
-
-    for interface in interfaceMatches:
-        interfaces.append(interface)
-
+    for dev in devs:
+        if dev.get_device_type() == devtype:
+            if dev.get_state() == NM.DeviceState.ACTIVATED:
+                interfaces.append(dev.get_iface())
 
     return interfaces
