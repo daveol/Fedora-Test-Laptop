@@ -14,6 +14,7 @@ class BluetoothScan(Test):
     bluetooth device that is specified in the YAML file is available.
     '''
     def setUp(self):
+        testdata = utils.load_yaml(self, "data/bluetooth_data.yaml")
         try:
             self.targetDeviceMac = self.testdata['testdata']['addr']
         except:
