@@ -3,7 +3,7 @@
 # mailto:desktop@lists.fedoraproject.org
 
 %include livebase.ks
-%include fedora-workstation-packages.ks
+%include fedora-workstation-packages-test.ks
 #
 # Disable this for now to see if packagekit is causing
 # compose failures by leaving a gpg-agent around holding /dev/null open.
