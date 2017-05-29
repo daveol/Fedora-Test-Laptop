@@ -13,7 +13,7 @@ class BluetoothPing(Test):
     If the test fails, a fail exception will be raised.
     '''
     def setUp(self):
-        testdata = utils.load_yaml(self, "data/bluetooth_data.yaml")
+        self.testdata = utils.load_yaml(self, "data/bluetooth_data.yaml")
         try:
             self.targetDeviceMac = self.testdata['testdata']['addr']
         except:
