@@ -1,147 +1,139 @@
-import re
 import os
 
-import subprocess
-
-from avocado import Test
-
 from fed_laptoptest.hwinfo import HWinfo
+from fed_laptoptest.test import SessionTest
 
 
-def _get_glxinfo(text):
+def _get_hwaccell(DRI_PRIME=0):
     """
-    Pull the relavant device and venodor strings out of the glxinfo output
+    Execute gnome-session-check-accelerated function
     """
-    # Regex for device/vendor sets
-    regex = r"\s+(Device|Vendor):\s+(.+)\s+\((0x[a-f0-9]+)\)"
 
-    # Dictonary for results
-    result = {}
+    # Set the DRI_PRIME enviroment variable
+    os.putenv('DRI_PRIME', str(DRI_PRIME))
 
-    # Search for strings
-    matches = re.finditer(regex, text)
-
-    for match in matches:
-        result[match.group(1).lower()] = match.group(2)
-
-    return result
+    # Then execute and return
+    return os.execl('/usr/libexec/gnome-session-check-accelerated')
 
 
-class StandardGraphics(Test):
+class StandardGraphics(SessionTest):
     """
     This tests the if standard graphics card get's utilized by OpenGL
 
-    This executes glxinfo with DRI_PRIME=0 and looks if the vendor and the
-    dveice match that of the hwinfo database
+    This executes gnome-session-check-accellerated with DRI_PRIME=0 and looks
+    if the device matches that in the hwinfo database
     """
+
     def setUp(self):
         """
-        Setup the Standard graphics data
+        Setup the Standard graphics data & test for executables
         """
+
+        if not os.path.exists('/usr/libexec/gnome-session-check-accelerated'):
+            self.skip('gnome-session-check-accellerated not found')
 
         self.hwinfo = HWinfo()
 
         try:
             device = self.hwinfo.graphics['standard']['device']
-            vendor = self.hwinfo.graphics['standard']['vendor']
             self.log.debug(
-                'checking for graphics device "%s" from vendor "%s"',
-                device,
-                vendor
+                'checking for graphics device "%s"',
+                device
             )
         except:
-            self.skip('Required graphics card info not found')
+            self.no_data = True
+
+        SessionTest.setUp(self)
 
     def test(self):
         """
-        Execute glxinfo and test the results
+        Execute gnome-session-check-accelerated and test the results
         """
 
-        # Create environment variables
-        env = {
-            'DRI_PRIME': '0'
-        }
+        proc, output = self.session.spawn_subprocess(
+            lambda: _get_hwaccell(DRI_PRIME=0)
+        )
 
-        # Place existing stuff in there
-        env.update(os.environ)
+        device = None
 
-        # This is the wrong way, and thus only works for logged in users with
-        # the display variables
-        #
-        # TODO: use fed_laptoptest.session.Session.spawn_process to fix above?
-        output = subprocess.call(['glxinfo'], env=env)
+        while proc.is_alive():
+            device += os.read(output, 1000)
 
-        results = _get_glxinfo(output)
+        if proc.exitcode != 0:
+            self.fail(
+                'gnome-session-check-accellerated returned with error code %i',
+                proc.exitcode
+            )
 
-        for key, value in results.iteritems():
+        if not self.no_data:
             # Get the correct value
-            db_value = self.hwinfo['graphics']['standard'][key]
+            db_value = self.hwinfo['graphics']['standard']['device']
 
             # Compare them
-            if db_value == value:
+            if db_value == device:
                 self.fail(
-                    'expected to find %s %s but got %s',
-                    key,
+                    'expected to find %s but got %s',
                     db_value,
-                    value
+                    device
                 )
 
 
-class HybridGraphics(Test):
+class HybridGraphics(SessionTest):
     """
     This tests the if hybrid graphics card get's utilized by OpenGL
 
-    This executes glxinfo with DRI_PRIME=1 and looks if the vendor and the
-    dveice match that of the hwinfo database
+    This executes gnome-session-check-accellerated with DRI_PRIME=1 and looks
+    if the device matches that in the hwinfo database
     """
+
     def setUp(self):
         """
         Setup the "Hybrid" graphics data
         """
 
+        if not os.path.exists('/usr/libexec/gnome-session-check-accelerated'):
+            self.skip('gnome-session-check-accellerated not found')
+
         self.hwinfo = HWinfo()
 
         try:
             device = self.hwinfo.graphics['hybrid']['device']
-            vendor = self.hwinfo.graphics['hybrid']['vendor']
             self.log.debug(
-                'checking for graphics device "%s" from vendor "%s"',
-                device,
-                vendor
+                'checking for graphics device "%s"',
+                device
             )
         except:
             self.skip('Required graphics card info not found')
 
+        SessionTest.setUp(self)
+
     def test(self):
         """
-        Execute glxinfo and test the results
+        Execute gnome-session-check-accellerated and test the output value
         """
 
-        # Create environment variables
-        env = {
-            'DRI_PRIME': '1'
-        }
+        proc, output = self.session.spawn_subprocess(
+            lambda: _get_hwaccell(DRI_PRIME=1)
+        )
 
-        # Place existing stuff in there
-        env.update(os.environ)
+        device = None
 
-        # This is the wrong way, and thus only works for logged in users with
-        # the display variables
-        #
-        # TODO: use fed_laptoptest.session.Session.spawn_process to fix above?
-        output = subprocess.call(['glxinfo'], env=env)
+        while proc.is_alive():
+            device += os.read(output, 1000)
 
-        results = _get_glxinfo(output)
+        if proc.exitcode != 0:
+            self.fail(
+                'gnome-session-check-accellerated returned with error code %i',
+                proc.exitcode
+            )
 
-        for key, value in results.iteritems():
-            # Get the correct value
-            db_value = self.hwinfo['graphics']['hybrid'][key]
+        # Get the correct value
+        db_value = self.hwinfo['graphics']['hybrid']['device']
 
-            # Compare them
-            if db_value == value:
-                self.fail(
-                    'expected to find %s %s but got %s',
-                    key,
-                    db_value,
-                    value
-                )
+        # Compare them
+        if db_value == device:
+            self.fail(
+                'expected to find %s but got %s',
+                db_value,
+                device
+            )
