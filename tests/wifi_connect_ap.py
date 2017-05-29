@@ -2,7 +2,7 @@
 
 from avocado import Test
 from utils import internet, utils
-
+import time
 class WifiConnectAP(Test):
     """
     Uses the first access point from internet_data to ping the default
@@ -31,7 +31,7 @@ class WifiConnectAP(Test):
 
     def connect_and_check(self):
         internet.connect(self.ap_ssid, self.ap_pass)
-
+        time.sleep(4)
         gateway = internet.get_gateway(self.interface, self)
 
         pingResult = internet.pingtest_hard(gateway, self.interface, self)
