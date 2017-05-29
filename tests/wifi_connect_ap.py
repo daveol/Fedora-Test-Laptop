@@ -23,7 +23,7 @@ class WifiConnectAP(Test):
         self.ap_pass = wifidata['access_point_1']['pass']
 
     def test(self):
-        self.wireless_interface = internet.get_active_device('wifi', self)
+        self.wireless_interface = internet.get_active_device('wifi', self).get_iface()
         self.connect_and_check()
 
     def connect_and_check(self):
