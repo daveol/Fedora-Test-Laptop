@@ -14,9 +14,11 @@ class BluetoothScan(Test):
     bluetooth device that is specified in the YAML file is available.
     '''
     def setUp(self):
-        self.testdata = utils.load_yaml(self, "data/bluetooth_data.yaml")
-        self.targetDeviceMac = self.testdata['testdata']['addr']
-        
+        try:
+            self.targetDeviceMac = self.testdata['testdata']['addr']
+        except:
+            self.skip('Invalid testdata')
+
         if not bool(re.match('^' + '[\:\-]'.join(['([0-9a-f]{2})']*6) + '$', self.targetDeviceMac.lower())):
             self.skip('Target Device mac address invalid')
 
