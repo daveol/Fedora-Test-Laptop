@@ -65,7 +65,7 @@ def get_known():
     connections = client.get_connections()
     return connections
 
-def connect(ssid, password):
+def connect(ssid, password, self):
     """ 
     Connects to a ssid, based on whether it exists.
     if it doesn't, makes a new connection, otherwise
@@ -98,7 +98,7 @@ def connect(ssid, password):
     # when the network does not yet exist, create a new one
     if existing == False:
         client = NM.Client.new(None)
-        con = create_wifi_profile(ssid, password)
+        con = create_wifi_profile(ssid, password, self)
         connected = False
         client.add_and_activate_connection_async(con, get_wifi_device(), None, None, add_c_finish, connected)
 
@@ -164,13 +164,17 @@ def get_active_device(if_type, test_class):
     devs = nmc.get_devices()
 
     for dev in devs:
+        if dev.get_state() != NM.DeviceState.ACTIVATED:
+            continue
+        if (dev.get_device_type() == NM.DeviceType.WIFI or
+            dev.get_device_type() == NM.DeviceType.ETHERNET):
+            return dev.get_iface()
         if dev.get_device_type() == devtype:
-            if dev.get_state() == NM.DeviceState.ACTIVATED:
-                return dev
+            return dev
 
     test_class.fail("No activated adapter found of type {0}".format(if_type))
 
-def create_wifi_profile(ssid, password):
+def create_wifi_profile(ssid, password, test_class):
     """
     To be documented.
 
@@ -188,12 +192,15 @@ def create_wifi_profile(ssid, password):
     wifi_dev = get_wifi_device()
 
     aps = NM.DeviceWifi.get_access_points(wifi_dev)
+    ap = False
     # Fetch ap by SSID
     for ap_candidate in aps:
         ssid_tmp = _ssid_to_utf8(ap_candidate)
         if (ssid_tmp == ssid):
             ap = ap_candidate
             break
+    if not ap:
+        test_class.fail("No such AP found with SSID: {0}".format(ssid))
 
     ap_flags = NM.AccessPoint.get_flags (ap);
     ap_wpa_flags = NM.AccessPoint.get_wpa_flags (ap);
