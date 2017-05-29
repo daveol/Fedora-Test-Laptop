@@ -44,17 +44,17 @@ class WifiSwitchAP(Test):
         self.ap5ghz_pass = wifidata['access_point_5ghz']['pass']
 
     def test_switch_ap(self):
-        self.wireless_interface = internet.get_active_interface('wifi', self)
+        self.wireless_interface = internet.get_active_device('wifi', self)
         self.switch_con(self.ap1_ssid, self.ap1_pass)
         self.switch_con(self.ap2_ssid, self.ap2_pass)
 
     def test_switch_freq(self):
-        self.wireless_interface = internet.get_active_interface('wifi', self)
+        self.wireless_interface = internet.get_active_device('wifi', self)
         self.switch_con(self.ap1_ssid, self.ap1_pass)
         self.switch_con(self.ap5ghz_ssid, self.ap5ghz_pass)
 
     def switch_con(self, ssid, password):
-        internet.connect(ssid, password)
+        internet.connect(ssid, password, self)
 
         gateway = internet.get_gateway(self.wireless_interface, self)
 
