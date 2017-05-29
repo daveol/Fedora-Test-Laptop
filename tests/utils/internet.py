@@ -1,5 +1,6 @@
 import subprocess as subp
 import re
+from gi.repository import NM
 
 import gi
 gi.require_version('NM', '1.0')
@@ -51,7 +52,7 @@ def pingtest_hard(ip, interface, test_class):
     """
     success = pingtest(ip, interface)
     if success == False:
-       test_class.fail("Ping on interface {0} to ip {1} failed".format(interface, ip));
+       test_class.fail("Ping on interface {0} to ip {1} failed".format(interface, ip))
 
 def get_known():
     """
@@ -147,25 +148,27 @@ def get_gateway(interface, test_class):
     
     return gateway
 
-def get_interfaces(if_type):
+def get_active_device(if_type, test_class):
     """
-    Gets the network adapters of the given type
-    
-    :param if_type: The type of interface to look for
-    :return: List of found interfaces
+    Gets the active network adapter of the given type
+
+    :param if_type: The type of interface to look for (e.g. wifi)
+    :param test_class: The class to fail when nothing is found
+    :return: First interface of type if_type that is ACTIVATED
     
     """
-    interfaces = [];
-    output = subp.Popen(['nmcli', '--fields', 'DEVICE,TYPE', 'device', 'status'], 
-                        stdout=subp.PIPE, stderr=subp.PIPE).communicate()[0]
+    devtype = "NM.DeviceType." + if_type.upper()
+    devtype = eval(devtype)
 
-    interfaceMatches = re.findall('([a-zA-Z0-9]*)\s+'+if_type, output, re.MULTILINE)
+    nmc = NM.Client.new(None)
+    devs = nmc.get_devices()
 
-    for interface in interfaceMatches:
-        interfaces.append(interface)
+    for dev in devs:
+        if dev.get_device_type() == devtype:
+            if dev.get_state() == NM.DeviceState.ACTIVATED:
+                return dev
 
-
-    return interfaces
+    test_class.fail("No activated adapter found of type {0}".format(if_type))
 
 def create_wifi_profile(ssid, password):
     """

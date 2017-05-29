@@ -15,9 +15,6 @@ class WifiSwitchAP(Test):
     def setUp(self):
         wifidata = utils.load_yaml(self, "data/internet_data.yaml")
 
-        if 'wireless_interface' not in wifidata:
-            self.skip("No wireless interface in the yaml config")
-
         if 'access_point_1' not in wifidata:
             self.skip("First AP not found in the yaml config")
 
@@ -39,7 +36,6 @@ class WifiSwitchAP(Test):
             'pass' not in wifidata['access_point_5ghz']):
             self.skip("5GHz AP data not found in the yaml config")
 
-        self.interface = wifidata['wireless_interface']
         self.ap1_ssid = wifidata['access_point_1']['ssid']
         self.ap1_pass = wifidata['access_point_1']['pass']
         self.ap2_ssid = wifidata['access_point_2']['ssid']
@@ -48,18 +44,20 @@ class WifiSwitchAP(Test):
         self.ap5ghz_pass = wifidata['access_point_5ghz']['pass']
 
     def test_switch_ap(self):
+        self.wireless_interface = internet.get_active_interface('wifi', self)
         self.switch_con(self.ap1_ssid, self.ap1_pass)
         self.switch_con(self.ap2_ssid, self.ap2_pass)
 
     def test_switch_freq(self):
+        self.wireless_interface = internet.get_active_interface('wifi', self)
         self.switch_con(self.ap1_ssid, self.ap1_pass)
         self.switch_con(self.ap5ghz_ssid, self.ap5ghz_pass)
 
     def switch_con(self, ssid, password):
         internet.connect(ssid, password)
 
-        gateway = internet.get_gateway(self.interface, self)
+        gateway = internet.get_gateway(self.wireless_interface, self)
 
-        internet.pingtest_hard(gateway, self.interface, self)
+        internet.pingtest_hard(gateway, self.wireless_interface, self)
 
         self.log.debug("Internet is working on network {0}, pinged {1}".format(ssid, gateway))
