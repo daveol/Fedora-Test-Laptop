@@ -1,5 +1,8 @@
 import os
 
+from avocado import main
+from avocado.core import exceptions
+
 from fed_laptoptest.hwinfo import HWinfo
 from fed_laptoptest.test import SessionTest
 
@@ -13,7 +16,7 @@ def _get_hwaccell(DRI_PRIME=0):
     os.putenv('DRI_PRIME', str(DRI_PRIME))
 
     # Then execute and return
-    return os.execl('/usr/libexec/gnome-session-check-accelerated')
+    return os.execl('/usr/libexec/gnome-session-check-accelerated', 'gnome-session-check-accelerated')
 
 
 class StandardGraphics(SessionTest):
@@ -22,6 +25,9 @@ class StandardGraphics(SessionTest):
 
     This executes gnome-session-check-accellerated with DRI_PRIME=0 and looks
     if the device matches that in the hwinfo database
+
+    :avocado: enable
+    :avocado: tags=manual
     """
 
     def setUp(self):
@@ -40,6 +46,7 @@ class StandardGraphics(SessionTest):
                 'checking for graphics device "%s"',
                 device
             )
+            self.no_data = False
         except:
             self.no_data = True
 
@@ -54,15 +61,15 @@ class StandardGraphics(SessionTest):
             lambda: _get_hwaccell(DRI_PRIME=0)
         )
 
-        device = None
+        device = ""
 
         while proc.is_alive():
             device += os.read(output, 1000)
 
         if proc.exitcode != 0:
             self.fail(
-                'gnome-session-check-accellerated returned with error code %i',
-                proc.exitcode
+                'gnome-session-check-accellerated returned with error code %s',
+                str(proc.exitcode)
             )
 
         if not self.no_data:
@@ -73,8 +80,7 @@ class StandardGraphics(SessionTest):
             if db_value == device:
                 self.fail(
                     'expected to find %s but got %s',
-                    db_value,
-                    device
+                    (db_value, device)
                 )
 
 
@@ -84,6 +90,9 @@ class HybridGraphics(SessionTest):
 
     This executes gnome-session-check-accellerated with DRI_PRIME=1 and looks
     if the device matches that in the hwinfo database
+
+    :avocado: enable
+    :avocado: tags=manual
     """
 
     def setUp(self):
@@ -116,7 +125,7 @@ class HybridGraphics(SessionTest):
             lambda: _get_hwaccell(DRI_PRIME=1)
         )
 
-        device = None
+        device = ""
 
         while proc.is_alive():
             device += os.read(output, 1000)
@@ -134,6 +143,8 @@ class HybridGraphics(SessionTest):
         if db_value == device:
             self.fail(
                 'expected to find %s but got %s',
-                db_value,
-                device
+                (db_value, device)
             )
+
+if __name__ == "__main__":
+    main()
