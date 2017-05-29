@@ -1,8 +1,3 @@
-wireless_interface: wlp2s0
-wired_interface: ens33
-expected:
- - first_ap
- - second_ap
 access_point_1:
  ssid: ap1_ssid
  pass: ap1_pw

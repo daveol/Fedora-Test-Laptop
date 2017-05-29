@@ -27,11 +27,6 @@ class WifiScanAP(Test):
         self.scan_ap();
 
     def scan_ap(self):
-    
-        #p = subp.Popen(['nmcli', 'device', 'wifi', 'list'], stdout=subp.PIPE, stderr=subp.PIPE)
-        #stdout, stderr = p.communicate()
-        #scan1 = stdout
-        
         nmc = NM.Client.new(None)
         devs = nmc.get_devices()
         ssids = [];
@@ -42,7 +37,7 @@ class WifiScanAP(Test):
                     ssid = ap.get_ssid()
                     if not ssid:
                         continue
-                    ssids.append(NM.utils_ssid_to_utf8(ap.get_ssid().get_data()))    
+                    ssids.append(NM.utils_ssid_to_utf8(ap.get_ssid().get_data()))
 
         if self.ap1_ssid not in ssids:
             self.fail("First AP not found {0}".format(self.ap1_ssid))
