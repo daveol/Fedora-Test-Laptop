@@ -4,21 +4,30 @@ import glob
 import time
 import multiprocessing
 import subprocess
+import re
+import utils.cpu
 
 from avocado import Test
 
 HWMON_DIR = '/sys/class/hwmon'
 
 
-def _cat(file_name):
-    return open(file_name).read().strip()
+def _cat(file_name, retry=3):
+    while True:
+        try:
+            return open(file_name).read().strip()
+        except IOError as e:
+            if retry <= 0:
+                raise e
+
+            retry -= 1
 
 
 class CpuTemps(Test):
 
     def setUp(self):
         self.__probes = glob.glob(
-                os.path.join(HWMON_DIR, 'hwmon[0-9]/temp[1-9]_input')
+                os.path.join(HWMON_DIR, 'hwmon*/temp*_input')
         )
 
         if len(self.__probes) < 1:
@@ -58,13 +67,13 @@ class CpuTemps(Test):
         Test load temperatures
         """
         cores_idle = {}
-        procs = []
+        regex = re.compile("(CPU|Package|Core)")
 
         # Get idle results for cpu('s)
         for probe, temp in self.get_values().iteritems():
             label = probe.replace('input', 'label')
             if os.path.isfile(label):
-                if 'CPU' in _cat(label):
+                if regex.match(_cat(label)):
                     cores_idle[probe] = temp
 
         if len(cores_idle.keys()) < 1:
@@ -72,15 +81,7 @@ class CpuTemps(Test):
             return 1
 
         # Create cpu load
-        for core in range(multiprocessing.cpu_count()):
-            procs.append(subprocess.Popen(['sha256sum','/dev/random']))
-
-        # Give some heat-up time
-        time.sleep(20)
-
-        # clean the processes
-        for proc in procs:
-            proc.kill()
+        utils.cpu.create_cpu_load()
 
         # test them again
         for probe, temp in self.get_values().iteritems():
