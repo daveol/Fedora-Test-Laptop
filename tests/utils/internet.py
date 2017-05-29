@@ -33,7 +33,7 @@ def pingtest_hard(ip, interface, test_class):
     """
     success = pingtest(ip, interface)
     if success == False:
-       test_class.fail("Ping on interface {0} to ip {1} failed".format(interface, ip));
+       test_class.fail("Ping on interface {0} to ip {1} failed".format(interface, ip))
 
 def get_known(type = ""):
     """
@@ -99,12 +99,13 @@ def get_gateway(interface, test_class):
     
     return gateway
 
-def get_interfaces(if_type):
+def get_active_interface(if_type, test_class):
     """
-    Gets the network adapters of the given type
+    Gets the network adapter of the given type
 
     :param if_type: The type of interface to look for (e.g. wifi)
-    :return: List of found interfaces that are ACTIVATED
+    :param test_class: The class to fail when nothing is found
+    :return: First interface of type if_type that is ACTIVATED
     
     """
     devtype = "NM.DeviceType." + if_type.upper()
@@ -112,11 +113,10 @@ def get_interfaces(if_type):
 
     nmc = NM.Client.new(None)
     devs = nmc.get_devices()
-    interfaces = [];
 
     for dev in devs:
         if dev.get_device_type() == devtype:
             if dev.get_state() == NM.DeviceState.ACTIVATED:
-                interfaces.append(dev.get_iface())
+                return dev.get_iface()
 
-    return interfaces
+    test_class.fail("No activated adapter found of typ {0}".format(if_type))

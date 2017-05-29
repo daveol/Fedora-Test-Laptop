@@ -32,17 +32,12 @@ class RadioKill(Test):
         if 'addr' not in bluetoothdata['testdata']:
             self.skip("No bluetooth addr found in the yaml config")
 
-        wireless_if = internet.get_interfaces('wifi')
-
-        if len(wireless_if) == 0:
-            self.skip("No wireless interface found")
-
-        self.interface = wireless_if[0]
         self.ap_ssid = wifidata['access_point_1']['ssid']
         self.ap_pass = wifidata['access_point_1']['pass']
         self.targetDeviceMac = bluetoothdata['testdata']['addr']
 
     def test(self):
+        self.wireless_interface = internet.get_active_interface('wifi', self)
         self.block_and_verify()
         self.unblock_and_verify()
 
@@ -66,8 +61,8 @@ class RadioKill(Test):
         time.sleep(5);
 
         internet.connect(self.ap_ssid, self.ap_pass)
-        gateway = internet.get_gateway(self.interface, self)
-        pingResult = internet.pingtest_hard(gateway, self.interface, self)
+        gateway = internet.get_gateway(self.wireless_interface, self)
+        pingResult = internet.pingtest_hard(gateway, self.wireless_interface, self)
 
         self.log.debug("Internet is working on network {0}".format(self.ap_ssid))
 

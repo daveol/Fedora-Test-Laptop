@@ -7,18 +7,13 @@ class EthernetConnect(Test):
     """
     Uses the wired interface from internet_data to ping the default
     gateway using internet utils.
-    
+
     """
-    def setUp(self):
-        self.wiredInterfaces = internet.get_interfaces('ethernet')
-
     def test(self):
-        if len(self.wiredInterfaces) == 0:
-            self.fail("No ethernet devices available")
+            self.wired_interface = internet.get_active_interface('ethernet', self)
 
-        for interface in self.wiredInterfaces:
-            gateway = internet.get_gateway(interface, self)
+            gateway = internet.get_gateway(self.wired_interface, self)
 
-            pingResult = internet.pingtest_hard(gateway, interface, self)
+            pingResult = internet.pingtest_hard(gateway, self.wired_interface, self)
 
-            self.log.debug("Internet is working on ethernet interface {0}".format(interface))       
+            self.log.debug("Internet is working on ethernet interface {0}".format(wired_interface))
