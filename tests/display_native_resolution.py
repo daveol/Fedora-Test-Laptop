@@ -23,6 +23,10 @@ class DisplayNativeResolution(Test):
 
     :avocado: tags=display
     """
+    def setUp():
+        # TODO: check yaml..
+        pass
+
     def test(self):
         resolutions = utils.load_yaml(self, "data/resolutions.yaml")
 
