@@ -23,13 +23,15 @@ class WifiConnectAP(Test):
         self.ap_pass = wifidata['access_point_1']['pass']
 
     def test(self):
-        self.wireless_interface = internet.get_active_device('wifi', self)
+        wifi_dev = internet.get_active_device('wifi', self)
+        self.wireless_interface = wifi_dev.get_iface()
+        self.log.debug(self.wireless_interface)
         self.connect_and_check()
 
     def connect_and_check(self):
         internet.connect(self.ap_ssid, self.ap_pass, self)
 
-        time.sleep(3)
+        time.sleep(10)
         gateway = internet.get_gateway(self.wireless_interface, self)
 
         pingResult = internet.pingtest_hard(gateway, self.wireless_interface, self)
