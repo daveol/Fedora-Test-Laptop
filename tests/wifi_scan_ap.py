@@ -27,6 +27,7 @@ class WifiScanAP(Test):
         self.scan_ap();
 
     def scan_ap(self):
+        # todo: call internet for wifi dev
         nmc = NM.Client.new(None)
         devs = nmc.get_devices()
         ssids = [];
