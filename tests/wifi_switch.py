@@ -2,6 +2,7 @@
 
 from avocado import Test
 from utils import internet, utils
+import time
 
 class WifiSwitchAP(Test):
     """
@@ -10,41 +11,56 @@ class WifiSwitchAP(Test):
     test a switch of access point.
     Secondly, the first and 5GHz access points are loaded from internet_data. The
     test sequence remains the same as in the first test.
-    
+
     """
     def setUp(self):
-        self.wifidata = utils.load_yaml(self, "data/internet_data.yaml")
+        wifidata = utils.load_yaml(self, "data/internet_data.yaml")
+
+        if 'access_point_1' not in wifidata:
+            self.skip("First AP not found in the yaml config")
+
+        if ('ssid' not in wifidata['access_point_1'] or
+            'pass' not in wifidata['access_point_1']):
+            self.skip("First AP data not found in the yaml config")
+
+        if 'access_point_2' not in wifidata:
+            self.skip("Second AP not found in the yaml config")
+
+        if ('ssid' not in wifidata['access_point_2'] or
+            'pass' not in wifidata['access_point_2']):
+            self.skip("Second AP data not found in the yaml config")
+
+        if 'access_point_5ghz' not in wifidata:
+            self.skip("5GHz AP not found in the yaml config")
+
+        if ('ssid' not in wifidata['access_point_5ghz'] or
+            'pass' not in wifidata['access_point_5ghz']):
+            self.skip("5GHz AP data not found in the yaml config")
+
+        self.ap1_ssid = wifidata['access_point_1']['ssid']
+        self.ap1_pass = wifidata['access_point_1']['pass']
+        self.ap2_ssid = wifidata['access_point_2']['ssid']
+        self.ap2_pass = wifidata['access_point_2']['pass']
+        self.ap5ghz_ssid = wifidata['access_point_5ghz']['ssid']
+        self.ap5ghz_pass = wifidata['access_point_5ghz']['pass']
+
+        wifi_dev = internet.get_active_device('wifi', self)
+        self.wireless_interface = wifi_dev.get_iface()
 
     def test_switch_ap(self):
-        wifidata = self.wifidata
-        switchFrom = wifidata['access_point_1']['ssid']
-        switchTo = wifidata['access_point_2']['ssid']
-        switchFromPass = wifidata['access_point_1']['pass']
-        switchToPass = wifidata['access_point_2']['pass']
-        self.interface = wifidata['wireless_interface']
+        self.switch_con(self.ap1_ssid, self.ap1_pass)
+        self.switch_con(self.ap2_ssid, self.ap2_pass)
 
-        self.switch_con(switchFrom, switchFromPass)
-        self.switch_con(switchTo, switchToPass)
-        
     def test_switch_freq(self):
-        wifidata = self.wifidata
-        switchFrom = wifidata['access_point_1']['ssid']
-        switchTo = wifidata['access_point_5ghz']['ssid']
-        switchFromPass = wifidata['access_point_1']['pass']
-        switchToPass = wifidata['access_point_5ghz']['pass']
-        self.interface = wifidata['wireless_interface']
+        self.switch_con(self.ap1_ssid, self.ap1_pass)
+        self.switch_con(self.ap5ghz_ssid, self.ap5ghz_pass)
 
-        self.switch_con(switchFrom, switchFromPass)
-        self.switch_con(switchTo, switchToPass)
+    def switch_con(self, ssid, password):
+        internet.connect(ssid, password, self)
 
-    def switch_con(self, ssid, password):		
-        internet.connect(ssid, password)
+	time.sleep(10)
+        gateway = internet.get_gateway(self.wireless_interface, self)
 
-        gateway = internet.get_gateway(self.interface, self)
+        internet.pingtest_hard(gateway, self.wireless_interface, self)
 
-        internet.pingtest_hard(gateway, self.interface, self)
-        
         self.log.debug("Internet is working on network {0}, pinged {1}".format(ssid, gateway))
-            
-
-

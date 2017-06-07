@@ -10,9 +10,21 @@ def get_data_dir():
     return _path
 
 def load_yaml(test_class, path):
-    with open(path, 'r') as stream:
-        try:
-            return yaml.load(stream)
-        except yaml.YAMLError as exc:
-            test_class.log.debug(exc)
-
+    """
+    Tries to open and load the yaml file referenced, skips the test when
+    the yaml file cannot be opened or loaded for some reason, e.g. when
+    the file is not found.
+    
+    :param path: The path where the yaml file is located
+    :param test_class: The class to skip when the yaml cannot be loaded
+    :return: Yaml file as a stream
+    
+    """
+    try:
+        with open(path, 'r') as stream:
+            try:
+                return yaml.load(stream)
+            except yaml.YAMLError as ex:
+                test_class.skip("Yaml file could not be loaded")
+    except IOError as exc:
+        test_class.skip("Yaml file could not be opened")
