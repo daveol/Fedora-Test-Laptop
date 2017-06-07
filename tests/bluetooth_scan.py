@@ -3,17 +3,24 @@ import os
 from avocado import Test
 import bluetooth
 from utils import utils
+import re
 
-'''
-This test will scan for available bluetooth devices and checks if the
-bluetooth device that is specified in the YAML file is available.
-'''
+
 
 class BluetoothScan(Test):
-    def test(self):
-        testdata = utils.load_yaml(self, "data/bluetooth_data.yaml")
-        self.targetDeviceMac = testdata['testdata']['addr']
+    '''
+    This test requires the pybluez package
+    This test will scan for available bluetooth devices and checks if the
+    bluetooth device that is specified in the YAML file is available.
+    '''
+    def setUp(self):
+        self.testdata = utils.load_yaml(self, "data/bluetooth_data.yaml")
+        self.targetDeviceMac = self.testdata['testdata']['addr']
         
+        if not bool(re.match('^' + '[\:\-]'.join(['([0-9a-f]{2})']*6) + '$', self.targetDeviceMac.lower())):
+            self.skip('Target Device mac address invalid')
+
+    def test(self):
         results = bluetooth.discover_devices(lookup_names = True)
         detected = False
         
@@ -22,6 +29,6 @@ class BluetoothScan(Test):
                 detected = True
                 
         if not detected:
-            self.fail("Bluetooth Scan test failed")
+            self.fail("Target device not found")
             
 #        self.log.debug("Bluetooth Scan test succeeded: " + results)
