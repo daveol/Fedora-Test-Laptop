@@ -14,37 +14,34 @@ from gi.repository import Gtk, Gdk, Gst
 
 from avocado import Test
 from os.path import exists, relpath
+from utils import webcam
 import time
 
 class WebcamReadQR(Test):
+    """
+    Uses the internal webcam /dev/video0 to read QR data by creating a 
+    pipeline, initializing Gtk main loop, and checking if the decoded data
+    from the QR code is correct after receiving the EOS message.
+    
+    """
     def setUp(self):
-        # if not exists('/dev/video0'):
-            # self.skip("No webcam detected: /dev/video0 cannot be found");
-        self.device = '/dev/video0'
-
-        self.take_snapshot()
+        if not exists('/dev/video0'):
+            self.skip("No webcam detected: /dev/video0 cannot be found");
 
     def test(self):
-        self.create_video_pipeline()
+        webcam.create_video_pipeline(self)
         Gdk.threads_init()
         Gtk.main()
+
         if (self.qr_data != "test"):
-            self.fail(3)
-
-    def create_video_pipeline(self):
-        Gst.init([])
-        #v4l2src
-        self.video_player = Gst.parse_launch("v4l2src num-buffers=10 ! jpegenc ! filesink location=cam_f.jpg")
-
-        bus = self.video_player.get_bus()
-        bus.add_signal_watch()
-        bus.connect("message", self.on_message)
-        self.video_player.set_state(Gst.State.PLAYING)
+            self.fail("QR code was not read properly")
+        self.log.debug("QR code was read properly")
 
     def on_message(self, bus, message):
         t = message.type
+
         if t == Gst.MessageType.EOS:
-            self.exit()
+            webcam.exit(self)
 
             time.sleep(3)
             qr = qrtools.QR()
@@ -52,13 +49,5 @@ class WebcamReadQR(Test):
             self.log.debug(qr.data)
             self.qr_data = qr.data
         elif t == Gst.MessageType.ERROR:
-            self.exit()
+            webcam.exit(self)
             self.fail("Error {0}".format(message.parse_error()))
-
-    def exit(self):
-        self.video_player.set_state(Gst.State.NULL)
-        Gtk.main_quit()
-
-    def take_snapshot(self):
-        pass
-        #TODO:fill this in, probably with set state to PLAYING
