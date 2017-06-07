@@ -2,27 +2,38 @@
 
 from avocado import Test
 from utils import internet, utils
-
+import time
 class WifiConnectAP(Test):
     """
     Uses the first access point from internet_data to ping the default
     gateway using internet utils.
-    
+
     """
-    def test(self):
+    def setUp(self):
         wifidata = utils.load_yaml(self, "data/internet_data.yaml")
 
-        accessPoint = wifidata['access_point_1']['ssid']
-        accessPointPass = wifidata['access_point_1']['pass']
-        self.interface = wifidata['wireless_interface']
+        if 'access_point_1' not in wifidata:
+            self.skip("No AP found in the yaml config")
 
-        self.connect_and_check(accessPoint, accessPointPass)
+        if ('ssid' not in wifidata['access_point_1'] or
+            'pass' not in wifidata['access_point_1']):
+            self.skip("No AP found in the yaml config")
 
-    def connect_and_check(self, ssid, password):
-        internet.connect(ssid, password)
+        self.ap_ssid = wifidata['access_point_1']['ssid']
+        self.ap_pass = wifidata['access_point_1']['pass']
 
-        gateway = internet.get_gateway(self.interface, self)
+    def test(self):
+        wifi_dev = internet.get_active_device('wifi', self)
+        self.wireless_interface = wifi_dev.get_iface()
+        self.log.debug(self.wireless_interface)
+        self.connect_and_check()
 
-        pingResult = internet.pingtest_hard(gateway, self.interface, self)
+    def connect_and_check(self):
+        internet.connect(self.ap_ssid, self.ap_pass, self)
 
-        self.log.debug("Internet is working on network {0}".format(ssid))
+        time.sleep(10)
+        gateway = internet.get_gateway(self.wireless_interface, self)
+
+        pingResult = internet.pingtest_hard(gateway, self.wireless_interface, self)
+
+        self.log.debug("Internet is working on network {0}".format(self.ap_ssid))
