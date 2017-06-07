@@ -23,12 +23,33 @@ class DisplayNativeResolution(Test):
 
     :avocado: tags=display
     """
-    def setUp():
-        # TODO: check yaml..
-        pass
+    def setUp(self):
+        resolutions = utils.load_yaml(self, "data/resolutions.yaml")
+
+        hwinfo = HWinfo()
+
+	try:
+            hwinfo_data     = hwinfo.dmi_load()
+            manufacturer    = hwinfo_data['sys_vendor'].lower()
+            model           = hwinfo_data['product_name'].lower()
+            self.log.debug(
+                'checking for graphics device "%s" from vendor "%s"',
+                manufacturer,
+                model
+            )
+            if manufacturer not in resolutions:
+                for manu in resolutions:
+                    manu = manu.lower()
+                    if manufacturer in manu or manu in manufacturer:
+                        manufacturer = manu
+
+            self.expected_width  = int(resolutions[manufacturer][model]['width'])
+            self.expected_height = int(resolutions[manufacturer][model]['height'])
+
+        except:
+            self.skip('Screen info not found')
 
     def test(self):
-        resolutions = utils.load_yaml(self, "data/resolutions.yaml")
 
         mon     = Gdk.Display.get_monitor(Gdk.Display.get_default(), 0)
         monitor = Monitor.from_monitor(mon)
@@ -39,14 +60,9 @@ class DisplayNativeResolution(Test):
         manufacturer    = hwinfo_data['sys_vendor'].lower()
         model           = hwinfo_data['product_name'].lower()
         
-        if manufacturer not in resolutions:
-            for manu in resolutions:
-                manu = manu.lower()
-                if manufacturer in manu or manu in manufacturer:
-                    manufacturer = manu
 
-        expected_width  = int(resolutions[manufacturer][model]['width'])
-        expected_height = int(resolutions[manufacturer][model]['height'])
+        expected_width  = self.expected_width
+        expected_height = self.expected_height
 
         if monitor.width != expected_width or monitor.height != expected_height:
             self.fail(
