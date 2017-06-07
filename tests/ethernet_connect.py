@@ -10,10 +10,12 @@ class EthernetConnect(Test):
 
     """
     def test(self):
-            self.wired_interface = internet.get_active_interface('ethernet', self)
+        wired_interface = internet.get_active_device('ethernet', self)
+        w_iface = wired_interface.get_iface()
 
-            gateway = internet.get_gateway(self.wired_interface, self)
+        gateway = internet.get_gateway(w_iface, self)
 
-            pingResult = internet.pingtest_hard(gateway, self.wired_interface, self)
+        pingResult = internet.pingtest_hard(gateway, w_iface, self)
 
-            self.log.debug("Internet is working on ethernet interface {0}".format(wired_interface))
+        self.log.debug("Internet is working on ethernet interface {0}"
+                       .format(w_iface))

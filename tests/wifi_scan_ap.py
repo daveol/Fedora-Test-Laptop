@@ -2,7 +2,7 @@
 
 import subprocess as subp
 from avocado import Test
-from utils import utils
+from utils import utils, internet
 from gi.repository import NM
 
 class WifiScanAP(Test):
@@ -32,13 +32,13 @@ class WifiScanAP(Test):
         devs = nmc.get_devices()
         ssids = [];
 
-        for dev in devs:
-            if dev.get_device_type() == NM.DeviceType.WIFI:
-                for ap in dev.get_access_points():
-                    ssid = ap.get_ssid()
-                    if not ssid:
-                        continue
-                    ssids.append(NM.utils_ssid_to_utf8(ap.get_ssid().get_data()))
+        dev = internet.get_active_device("wifi", self)
+
+        for ap in dev.get_access_points():
+            ssid = ap.get_ssid()
+            if not ssid:
+                continue
+            ssids.append(NM.utils_ssid_to_utf8(ap.get_ssid().get_data()))
 
         if self.ap1_ssid not in ssids:
             self.fail("First AP not found {0}".format(self.ap1_ssid))
