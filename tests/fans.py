@@ -4,22 +4,35 @@ import glob
 import time
 import multiprocessing
 import subprocess
+import utils.cpu
 
 from avocado import Test
 
 HWMON_DIR = '/sys/class/hwmon'
 
 
-def _cat(file_name):
-    return open(file_name).read().strip()
+def _cat(file_name, retry=3):
+    while True:
+        try:
+            return open(file_name).read().strip()
+        except IOError as e:
+            if retry <= 0:
+                raise e
+
+            retry -= 1
 
 
 class Fans(Test):
 
     def setUp(self):
         self.__probes = glob.glob(
-                os.path.join(HWMON_DIR, 'hwmon[0-9]/fan[1-9]_input')
+                os.path.join(HWMON_DIR, 'hwmon*/fan*_input')
         )
+
+        # Because weird drivers (Thinkpad)
+        self.__probes.extend(glob.glob(
+            os.path.join(HWMON_DIR, 'hwmon*/device/fan*_input')
+        ))
 
         if len(self.__probes) < 1:
             self.skip('No fan monitoring found')
@@ -48,25 +61,15 @@ class Fans(Test):
         Test the load fan speeds
         """
         speeds = {}
-        procs = []
 
         # Get idle results for cpu('s)
         for probe, speed in self.get_values().iteritems():
             speeds[probe] = speed
 
-
         # Create cpu load
-        for core in range(multiprocessing.cpu_count()):
-            procs.append(subprocess.Popen(['sha256sum','/dev/random']))
-
-        # Give some heat-up time
-        time.sleep(20)
-
-        # kill the load
-        for proc in procs:
-            proc.kill()
+        utils.cpu.create_cpu_load()
 
         # test them again
         for probe, speed in self.get_values().iteritems():
-            if speeds[probe] < speed:
+            if speeds[probe] <= speed:
                 self.fail('No rise in speed detected for %s', probe)
