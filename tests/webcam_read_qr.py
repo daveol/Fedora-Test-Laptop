@@ -16,6 +16,10 @@ class WebcamReadQR(Test):
     if the decoded data from the QR code is correct after receiving the EOS
     message. The .jpg is saved in the self.logdata directory.
 
+    For now, has a manual tag because a QR code needs to be presented to
+    pass. This can just be a piece of paper with the QR printed on it.
+
+    :avocado: tags=manual
     """
     def setUp(self):
         self.error = None

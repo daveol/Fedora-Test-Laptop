@@ -11,11 +11,7 @@ def create_video_pipeline(test_class):
     cam.jpg. A signal watch is added to the bus, calling on_message when a
     message arrives. Set state to playing, causing the data to be rendered.
 
-    For now, has a manual tag because a QR code needs to be presented to
-    pass. This can just be a piece of paper with the QR printed on it.
-
     :param test_class: The class which uses the video player
-    :avocado: tags=manual
 
     """
     Gst.init([])
