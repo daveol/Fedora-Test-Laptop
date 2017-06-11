@@ -58,6 +58,7 @@ class RadioKill(Test):
     def unblock_and_verify(self):
         p = subp.call(['rfkill', 'unblock', 'all'])
 
+        # wait for radio services to unblock
         time.sleep(5);
 
         internet.connect(self.ap_ssid, self.ap_pass)
