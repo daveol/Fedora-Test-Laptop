@@ -1,11 +1,7 @@
 import subprocess as subp
-import re
-from gi.repository import NM
-
-import gi
+import re, gi, sys, uuid
 gi.require_version('NM', '1.0')
 from gi.repository import GLib, NM, GObject
-import sys, uuid
 
 main_loop = None
 
