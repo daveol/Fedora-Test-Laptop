@@ -5,18 +5,16 @@ gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
 from gi.repository import Gtk, Gst
 
-def create_video_pipeline(test_class, gst_elements, v4l2src_args="num-buffers=10", seperator="!"):
+def create_video_pipeline(test_class, gst_elements, v4l2src_args="", seperator="!"):
     """
     Creates a pipeline using the default /dev/video0 webcam when no device arg
     has been given in the v4l2src_args. A signal watch is added to the bus,
     calling on_message when a message arrives. Set state to playing, causing
     the data to be rendered.
 
-    Default v4l2src_args is num-buffers=10 to adjust white balance values.
-
     :param test_class: The class which uses the video player
-    :param v4l2src_args: string with arguments for the v4l2src element
     :param gst_elements: list of custom elements to be added to the pipeline
+    :param v4l2src_args: string with arguments for the v4l2src element
     :param seperator: The seperator to use in the pipeline default "!"
 
     """
