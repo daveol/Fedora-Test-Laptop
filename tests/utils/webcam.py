@@ -5,15 +5,12 @@ gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
 from gi.repository import Gtk, Gst
 
-def create_video_pipeline(test_class, gst_elements, v4l2src_args=" num-buffers=100", seperator="!"):
+def create_video_pipeline(test_class, gst_elements, v4l2src_args="", seperator="!"):
     """
     Creates a pipeline using the default /dev/video0 webcam when no device arg
     has been given in the v4l2src_args. A signal watch is added to the bus,
     calling on_message when a message arrives. Set state to playing, causing
     the data to be rendered.
-
-    Default v4l2src_args is num-buffers=100 to make sure enough time has passed
-    to calculate an average fps.
 
     :param test_class: The class which uses the video player
     :param gst_elements: list of custom elements to be added to the pipeline
@@ -25,9 +22,9 @@ def create_video_pipeline(test_class, gst_elements, v4l2src_args=" num-buffers=1
     seperator = seperator.ljust(2).rjust(3)
     # Create pipeline string from elements
     elem_str = seperator.join(gst_elements)
-    test_class.log.debug("Creating pipeline v4l2src" +
+    test_class.log.debug("Creating pipeline v4l2src " +
                          v4l2src_args + seperator + elem_str)
-    test_class.video_player = Gst.parse_launch("v4l2src" + v4l2src_args + seperator + elem_str)
+    test_class.video_player = Gst.parse_launch("v4l2src " + v4l2src_args + seperator + elem_str)
 
     bus = test_class.video_player.get_bus()
     bus.add_signal_watch()
