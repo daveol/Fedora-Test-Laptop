@@ -30,8 +30,8 @@ class WebcamReadQR(Test):
         self.img_path = os.path.join(self.logdir, 'cam.jpg')
 
     def test_raw_image(self):
-        elements = ['jpegenc', 'filesink location=' + self.img_path]
-        webcam.create_video_pipeline(self, gst_elements=elements, v4l2src_args="num-buffers=10")
+        elements = ['jpegenc', 'fakesink']
+        webcam.create_video_pipeline(self, gst_elements=elements, v4l2src_args="num-buffers=20")
         Gtk.main()
 
         if self.error != None:
@@ -43,8 +43,8 @@ class WebcamReadQR(Test):
 
     def test_single_mirrored(self):
         elements = ['videoflip method=horizontal-flip',
-                    'jpegenc', 'filesink location=' + self.img_path]
-        webcam.create_video_pipeline(self, gst_elements=elements, v4l2src_args="num-buffers=10")
+                    'jpegenc', 'fakesink']
+        webcam.create_video_pipeline(self, gst_elements=elements, v4l2src_args="num-buffers=20")
         Gtk.main()
 
         if self.error != None:
@@ -57,8 +57,8 @@ class WebcamReadQR(Test):
     def test_double_mirrored(self):
         elements = ['videoflip method=horizontal-flip',
                     'videoflip method=horizontal-flip',
-                    'jpegenc', 'filesink location=' + self.img_path]
-        webcam.create_video_pipeline(self, gst_elements=elements, v4l2src_args="num-buffers=10")
+                    'jpegenc', 'fakesink']
+        webcam.create_video_pipeline(self, gst_elements=elements, v4l2src_args="num-buffers=20")
         Gtk.main()
 
         if self.error != None:
@@ -72,6 +72,11 @@ class WebcamReadQR(Test):
         t = message.type
 
         if t == Gst.MessageType.EOS:
+            fakesink = self.video_player.get_by_name("fakesink0")
+            last_sample = fakesink.get_property('last-sample')
+            result, mapping = last_sample.get_buffer().map(Gst.MapFlags.READ)
+            open(self.img_path, 'w').write(mapping.data)
+
             webcam.exit(self)
 
             qr = qrtools.QR()
