@@ -31,7 +31,9 @@ class WebcamReadQR(Test):
 
     def test_raw_image(self):
         elements = ['jpegenc', 'fakesink']
-        webcam.create_video_pipeline(self, gst_elements=elements, v4l2src_args="num-buffers=20")
+        webcam.create_video_pipeline(self, gst_elements=elements,
+                                     v4l2src_args="num-buffers=20")
+
         Gtk.main()
 
         if self.error != None:
@@ -44,7 +46,8 @@ class WebcamReadQR(Test):
     def test_single_mirrored(self):
         elements = ['videoflip method=horizontal-flip',
                     'jpegenc', 'fakesink']
-        webcam.create_video_pipeline(self, gst_elements=elements, v4l2src_args="num-buffers=20")
+        webcam.create_video_pipeline(self, gst_elements=elements,
+                                     v4l2src_args="num-buffers=20")
         Gtk.main()
 
         if self.error != None:
@@ -58,7 +61,8 @@ class WebcamReadQR(Test):
         elements = ['videoflip method=horizontal-flip',
                     'videoflip method=horizontal-flip',
                     'jpegenc', 'fakesink']
-        webcam.create_video_pipeline(self, gst_elements=elements, v4l2src_args="num-buffers=20")
+        webcam.create_video_pipeline(self, gst_elements=elements,
+                                     v4l2src_args="num-buffers=20")
         Gtk.main()
 
         if self.error != None:
