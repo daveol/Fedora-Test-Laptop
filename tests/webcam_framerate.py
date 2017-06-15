@@ -1,4 +1,4 @@
-    #!/usr/bin/env python
+#!/usr/bin/env python
 
 import gi, os
 gi.require_version('Gtk', '3.0')
@@ -18,6 +18,8 @@ class WebcamFrameRate(Test):
     The element in test(), "video/x-raw, framerate=(rate)/1" can be changed
     when creating the pipeline. Where (rate) is the framerate, to test for
     different framerates if necessary.
+
+    Test constraint: enough lighting should be available in the room.
 
     """
     def setUp(self):
