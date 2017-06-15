@@ -1,13 +1,13 @@
     #!/usr/bin/env python
 
-import qrtools, gi, os
+import gi, os
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
 from gi.repository import Gtk, Gst
 from avocado import Test
 from utils import webcam
 
-class WebcamReadQR(Test):
+class WebcamFrameRate(Test):
     """
     Uses the camera selected by v4l2src by default (/dev/video0) to get the
     framerate by creating a pipeline with an fpsdisplaysink and initializing
