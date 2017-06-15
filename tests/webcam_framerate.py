@@ -20,7 +20,6 @@ class WebcamFrameRate(Test):
     different framerates if necessary.
 
     Test constraint: enough lighting should be available in the room.
-
     """
     def setUp(self):
         self.error = None

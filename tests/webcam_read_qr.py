@@ -33,7 +33,6 @@ class WebcamReadQR(Test):
         elements = ['jpegenc', 'fakesink']
         webcam.create_video_pipeline(self, gst_elements=elements,
                                      v4l2src_args="num-buffers=20")
-
         Gtk.main()
 
         if self.error != None:
@@ -48,6 +47,7 @@ class WebcamReadQR(Test):
                     'jpegenc', 'fakesink']
         webcam.create_video_pipeline(self, gst_elements=elements,
                                      v4l2src_args="num-buffers=20")
+
         Gtk.main()
 
         if self.error != None:
@@ -63,6 +63,7 @@ class WebcamReadQR(Test):
                     'jpegenc', 'fakesink']
         webcam.create_video_pipeline(self, gst_elements=elements,
                                      v4l2src_args="num-buffers=20")
+
         Gtk.main()
 
         if self.error != None:
