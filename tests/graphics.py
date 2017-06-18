@@ -77,7 +77,7 @@ class StandardGraphics(SessionTest):
             db_value = self.hwinfo['graphics']['standard']['device']
 
             # Compare them
-            if db_value == device:
+            if db_value != device:
                 self.fail(
                     'expected to find %s but got %s',
                     (db_value, device)
@@ -140,7 +140,7 @@ class HybridGraphics(SessionTest):
         db_value = self.hwinfo['graphics']['hybrid']['device']
 
         # Compare them
-        if db_value == device:
+        if db_value != device:
             self.fail(
                 'expected to find %s but got %s',
                 (db_value, device)
