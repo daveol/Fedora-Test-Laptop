@@ -1,7 +1,13 @@
+#!/usr/bin/env python
+
+# Copyright 2017 Nick Dekker.
+#
+# This work is licensed under the terms of the MIT license.
+# For a copy, see LICENSE.txt.
+
 from avocado import Test
 
 from utils import utils
-
 from utils.monitor import Monitor
 from utils.hwinfo import HWinfo
 """

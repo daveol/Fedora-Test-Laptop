@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+# Copyright 2017 Nick Dekker, Marthe Veldhuis.
+#
+# This work is licensed under the terms of the MIT license.
+# For a copy, see LICENSE.txt.
+
 import gi, os
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')

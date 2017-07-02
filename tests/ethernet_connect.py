@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+# Copyright 2017 Nick Dekker, Marthe Veldhuis.
+#
+# This work is licensed under the terms of the MIT license.
+# For a copy, see LICENSE.txt.
+
 from avocado import Test
 from utils import internet, utils
 

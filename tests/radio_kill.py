@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+# Copyright 2017 Marthe Veldhuis.
+#
+# This work is licensed under the terms of the MIT license.
+# For a copy, see LICENSE.txt.
+
 import subprocess as subp
 import time
 from avocado import Test
@@ -26,7 +31,7 @@ class RadioKill(Test):
             'pass' not in wifidata['access_point_1']):
             self.skip("No AP data found in the yaml config")
 
-	    if 'testdata' not in bluetoothdata:
+        if 'testdata' not in bluetoothdata:
             self.skip("No bluetooth data found in the yaml config")
 
         if 'addr' not in bluetoothdata['testdata']:

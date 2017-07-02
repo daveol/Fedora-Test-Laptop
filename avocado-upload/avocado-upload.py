@@ -1,4 +1,10 @@
 #!/usr/bin/python3
+
+# Copyright 2017 Nick Dekker, Marthe Veldhuis.
+#
+# This work is licensed under the terms of the MIT license.
+# For a copy, see LICENSE.txt.
+
 import pyinotify
 import pycurl, json
 import zipfile, os, requests
