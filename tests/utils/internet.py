@@ -177,10 +177,15 @@ def get_active_device(if_type, test_class):
 
 def create_wifi_profile(ssid, password, test_class):
     """
-    To be documented.
+    Creates a wifi profile using the libnm library. Currently only has WPA
+    support. Will return a profile of the passed SSID and password. The
+    profile is not added to NetworkManager, nor is it activated.
+    
+    The profile will be created using the first found active wifi device.
 
     :param: ssid The SSID to connect with
     :param: password password of the SSID if needed
+    :return: SimpleConnection The profile with partial config
     """
     profile = NM.SimpleConnection.new()
     s_con = NM.SettingConnection.new()
