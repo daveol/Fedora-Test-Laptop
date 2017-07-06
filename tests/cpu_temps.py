@@ -1,9 +1,28 @@
+# Copyright (C) 2017 Dave Olsthoon <dave@bewaar.me>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+
 import os
 import os.path
 import glob
 import time
-import multiprocessing
-import subprocess
 import re
 import utils.cpu
 
@@ -26,6 +45,9 @@ def _cat(file_name, retry=3):
 class CpuTemps(Test):
 
     def setUp(self):
+        """
+        Figure out which temperature probes exist
+        """
         self.__probes = glob.glob(
                 os.path.join(HWMON_DIR, 'hwmon*/temp*_input')
         )
@@ -33,7 +55,6 @@ class CpuTemps(Test):
         if len(self.__probes) < 1:
             self.skip('No probes found')
             return 1
-
 
     def get_values(self):
         """
@@ -57,7 +78,7 @@ class CpuTemps(Test):
         # be idle
         time.sleep(60)
 
-        #check them
+        # check them
         for probe, temp in self.get_values().iteritems():
             if temp > 60:
                 self.fail("%s is more than 60 degrees: %i", probe, temp)
@@ -86,5 +107,5 @@ class CpuTemps(Test):
         # test them again
         for probe, temp in self.get_values().iteritems():
             if probe in cores_idle.keys():
-               if cores_idle[probe] + 5 < temp:
-                   self.fail('No rise in temperature detected for %s', probe)
+                if cores_idle[probe] + 5 < temp:
+                    self.fail('No rise in temperature detected for %s', probe)

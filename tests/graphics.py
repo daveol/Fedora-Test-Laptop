@@ -1,7 +1,29 @@
+#!/usr/bin/env python
+#
+# Copyright (C) 2017 Dave Olsthoon <dave@bewaar.me>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+
 import os
 
 from avocado import main
-from avocado.core import exceptions
 
 from fed_laptoptest.hwinfo import HWinfo
 from fed_laptoptest.test import SessionTest
@@ -16,11 +38,14 @@ def _get_hwaccell(DRI_PRIME=0):
     os.putenv('DRI_PRIME', str(DRI_PRIME))
 
     # Then execute and return
-    return os.execl('/usr/libexec/gnome-session-check-accelerated', 'gnome-session-check-accelerated')
+    return os.execl(
+            '/usr/libexec/gnome-session-check-accelerated',
+            'gnome-session-check-accelerated'
+            )
 
 
-class StandardGraphics(SessionTest):
-    """
+    class StandardGraphics(SessionTest):
+        """
     This tests the if standard graphics card get's utilized by OpenGL
 
     This executes gnome-session-check-accellerated with DRI_PRIME=0 and looks
@@ -43,9 +68,9 @@ class StandardGraphics(SessionTest):
         try:
             device = self.hwinfo.graphics['standard']['device']
             self.log.debug(
-                'checking for graphics device "%s"',
-                device
-            )
+                    'checking for graphics device "%s"',
+                    device
+                    )
             self.no_data = False
         except:
             self.no_data = True
@@ -58,8 +83,8 @@ class StandardGraphics(SessionTest):
         """
 
         proc, output = self.session.spawn_subprocess(
-            lambda: _get_hwaccell(DRI_PRIME=0)
-        )
+                lambda: _get_hwaccell(DRI_PRIME=0)
+                )
 
         device = ""
 
@@ -68,20 +93,20 @@ class StandardGraphics(SessionTest):
 
         if proc.exitcode != 0:
             self.fail(
-                'gnome-session-check-accellerated returned with error code %s',
-                str(proc.exitcode)
-            )
+                    'gnome-session-check-accellerated returned with error code %s',
+                    str(proc.exitcode)
+                    )
 
-        if not self.no_data:
-            # Get the correct value
+            if not self.no_data:
+                # Get the correct value
             db_value = self.hwinfo['graphics']['standard']['device']
 
             # Compare them
             if db_value != device:
                 self.fail(
-                    'expected to find %s but got %s',
-                    (db_value, device)
-                )
+                        'expected to find %s but got %s',
+                        (db_value, device)
+                        )
 
 
 class HybridGraphics(SessionTest):
@@ -108,9 +133,9 @@ class HybridGraphics(SessionTest):
         try:
             device = self.hwinfo.graphics['hybrid']['device']
             self.log.debug(
-                'checking for graphics device "%s"',
-                device
-            )
+                    'checking for graphics device "%s"',
+                    device
+                    )
         except:
             self.skip('Required graphics card info not found')
 
@@ -122,8 +147,8 @@ class HybridGraphics(SessionTest):
         """
 
         proc, output = self.session.spawn_subprocess(
-            lambda: _get_hwaccell(DRI_PRIME=1)
-        )
+                lambda: _get_hwaccell(DRI_PRIME=1)
+                )
 
         device = ""
 
@@ -132,19 +157,19 @@ class HybridGraphics(SessionTest):
 
         if proc.exitcode != 0:
             self.fail(
-                'gnome-session-check-accellerated returned with error code %i',
-                proc.exitcode
-            )
+                    'gnome-session-check-accellerated returned with error code %i',
+                    proc.exitcode
+                    )
 
-        # Get the correct value
+            # Get the correct value
         db_value = self.hwinfo['graphics']['hybrid']['device']
 
         # Compare them
         if db_value != device:
             self.fail(
-                'expected to find %s but got %s',
-                (db_value, device)
-            )
+                    'expected to find %s but got %s',
+                    (db_value, device)
+                    )
 
-if __name__ == "__main__":
-    main()
+            if __name__ == "__main__":
+                main()
